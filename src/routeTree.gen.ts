@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CertificationIndexRouteImport } from './routes/certification.index'
+import { Route as CertificationLevelNRouteImport } from './routes/certification.$level.$n'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +23,40 @@ const CertificationIndexRoute = CertificationIndexRouteImport.update({
   path: '/certification/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CertificationLevelNRoute = CertificationLevelNRouteImport.update({
+  id: '/certification/$level/$n',
+  path: '/certification/$level/$n',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/certification/': typeof CertificationIndexRoute
+  '/certification/$level/$n': typeof CertificationLevelNRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/certification': typeof CertificationIndexRoute
+  '/certification/$level/$n': typeof CertificationLevelNRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/certification/': typeof CertificationIndexRoute
+  '/certification/$level/$n': typeof CertificationLevelNRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/certification/'
+  fullPaths: '/' | '/certification/' | '/certification/$level/$n'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/certification'
-  id: '__root__' | '/' | '/certification/'
+  to: '/' | '/certification' | '/certification/$level/$n'
+  id: '__root__' | '/' | '/certification/' | '/certification/$level/$n'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CertificationIndexRoute: typeof CertificationIndexRoute
+  CertificationLevelNRoute: typeof CertificationLevelNRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +75,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CertificationIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/certification/$level/$n': {
+      id: '/certification/$level/$n'
+      path: '/certification/$level/$n'
+      fullPath: '/certification/$level/$n'
+      preLoaderRoute: typeof CertificationLevelNRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CertificationIndexRoute: CertificationIndexRoute,
+  CertificationLevelNRoute: CertificationLevelNRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
