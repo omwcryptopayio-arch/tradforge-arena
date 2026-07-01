@@ -190,3 +190,23 @@
   -webkit-text-fill-color: transparent;
   color: transparent;
 }
+
+.tf-range::-webkit-slider-thumb {
+  appearance: none;
+  height: 18px;
+  width: 18px;
+  border-radius: 9999px;
+  background: #ffffff;
+  border: 2px solid var(--gold);
+  box-shadow: 0 0 0 3px oklch(0.8 0.155 72 / 0.25);
+  cursor: pointer;
+}
+
+.tf-range::-moz-range-thumb {
+  height: 16px;
+  width: 16px;
+  border-radius: 9999px;
+  background: #ffffff;
+  border: 2px solid var(--gold);
+  cursor: pointer;
+}
