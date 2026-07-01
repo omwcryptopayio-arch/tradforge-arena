@@ -9,38 +9,80 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as JournalRouteImport } from './routes/journal'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CertificationIndexRouteImport } from './routes/certification.index'
+import { Route as CertificationLevelNRouteImport } from './routes/certification.$level.$n'
 
+const JournalRoute = JournalRouteImport.update({
+  id: '/journal',
+  path: '/journal',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CertificationIndexRoute = CertificationIndexRouteImport.update({
+  id: '/certification/',
+  path: '/certification/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CertificationLevelNRoute = CertificationLevelNRouteImport.update({
+  id: '/certification/$level/$n',
+  path: '/certification/$level/$n',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/journal': typeof JournalRoute
+  '/certification/': typeof CertificationIndexRoute
+  '/certification/$level/$n': typeof CertificationLevelNRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/journal': typeof JournalRoute
+  '/certification': typeof CertificationIndexRoute
+  '/certification/$level/$n': typeof CertificationLevelNRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/journal': typeof JournalRoute
+  '/certification/': typeof CertificationIndexRoute
+  '/certification/$level/$n': typeof CertificationLevelNRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/journal' | '/certification/' | '/certification/$level/$n'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/journal' | '/certification' | '/certification/$level/$n'
+  id:
+    | '__root__'
+    | '/'
+    | '/journal'
+    | '/certification/'
+    | '/certification/$level/$n'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  JournalRoute: typeof JournalRoute
+  CertificationIndexRoute: typeof CertificationIndexRoute
+  CertificationLevelNRoute: typeof CertificationLevelNRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/journal': {
+      id: '/journal'
+      path: '/journal'
+      fullPath: '/journal'
+      preLoaderRoute: typeof JournalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +90,29 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/certification/': {
+      id: '/certification/'
+      path: '/certification'
+      fullPath: '/certification/'
+      preLoaderRoute: typeof CertificationIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/certification/$level/$n': {
+      id: '/certification/$level/$n'
+      path: '/certification/$level/$n'
+      fullPath: '/certification/$level/$n'
+      preLoaderRoute: typeof CertificationLevelNRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  JournalRoute: JournalRoute,
+  CertificationIndexRoute: CertificationIndexRoute,
+  CertificationLevelNRoute: CertificationLevelNRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
