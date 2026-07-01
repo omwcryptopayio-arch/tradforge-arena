@@ -9,10 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as JournalRouteImport } from './routes/journal'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CertificationIndexRouteImport } from './routes/certification.index'
 import { Route as CertificationLevelNRouteImport } from './routes/certification.$level.$n'
 
+const JournalRoute = JournalRouteImport.update({
+  id: '/journal',
+  path: '/journal',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -31,36 +37,52 @@ const CertificationLevelNRoute = CertificationLevelNRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/journal': typeof JournalRoute
   '/certification/': typeof CertificationIndexRoute
   '/certification/$level/$n': typeof CertificationLevelNRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/journal': typeof JournalRoute
   '/certification': typeof CertificationIndexRoute
   '/certification/$level/$n': typeof CertificationLevelNRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/journal': typeof JournalRoute
   '/certification/': typeof CertificationIndexRoute
   '/certification/$level/$n': typeof CertificationLevelNRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/certification/' | '/certification/$level/$n'
+  fullPaths: '/' | '/journal' | '/certification/' | '/certification/$level/$n'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/certification' | '/certification/$level/$n'
-  id: '__root__' | '/' | '/certification/' | '/certification/$level/$n'
+  to: '/' | '/journal' | '/certification' | '/certification/$level/$n'
+  id:
+    | '__root__'
+    | '/'
+    | '/journal'
+    | '/certification/'
+    | '/certification/$level/$n'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  JournalRoute: typeof JournalRoute
   CertificationIndexRoute: typeof CertificationIndexRoute
   CertificationLevelNRoute: typeof CertificationLevelNRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/journal': {
+      id: '/journal'
+      path: '/journal'
+      fullPath: '/journal'
+      preLoaderRoute: typeof JournalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -87,6 +109,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  JournalRoute: JournalRoute,
   CertificationIndexRoute: CertificationIndexRoute,
   CertificationLevelNRoute: CertificationLevelNRoute,
 }
