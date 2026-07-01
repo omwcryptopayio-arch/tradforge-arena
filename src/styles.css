@@ -210,3 +210,11 @@
   border: 2px solid var(--gold);
   cursor: pointer;
 }
+
+.tf-grid-bg {
+  background-image:
+    radial-gradient(120% 90% at 50% -10%, oklch(0.8 0.155 72 / 0.08), transparent 55%),
+    linear-gradient(oklch(1 0 0 / 0.022) 1px, transparent 1px),
+    linear-gradient(90deg, oklch(1 0 0 / 0.022) 1px, transparent 1px);
+  background-size: 100% 100%, 44px 44px, 44px 44px;
+}
