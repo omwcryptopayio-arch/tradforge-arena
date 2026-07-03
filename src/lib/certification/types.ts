@@ -35,6 +35,8 @@ export interface ChartSpec {
 export interface McqOption {
   label: string;
   direction: Direction;
+  /** Optional per-option debrief: why this answer is wrong / why it is best. */
+  explain?: string;
 }
 
 /** Reusable context card template (catalog). Relevance is per-scenario, not here. */
