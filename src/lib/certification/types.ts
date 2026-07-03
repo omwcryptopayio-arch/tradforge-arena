@@ -35,6 +35,8 @@ export interface ChartSpec {
 export interface McqOption {
   label: string;
   direction: Direction;
+  /** Optional per-option debrief: why this answer is wrong / why it is best. */
+  explain?: string;
 }
 
 /** Reusable context card template (catalog). Relevance is per-scenario, not here. */
@@ -67,6 +69,12 @@ export interface ScenarioSpec {
   correctDirection: Direction;
   rationale: string;
   outcome: string;
+  /** Debrief "Réponse rapide" — one-line institutional verdict (optional). */
+  quickTake?: string;
+  /** Debrief "Key Learning" — transferable takeaway (optional). */
+  keyLearning?: string;
+  /** Optional macro-impact bullets for the "Impact macro" debrief block. */
+  macroImpact?: string[];
   // Standard (MCQ engine)
   question?: string;
   options?: McqOption[];

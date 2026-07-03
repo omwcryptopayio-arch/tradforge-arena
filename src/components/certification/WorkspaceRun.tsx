@@ -7,6 +7,7 @@ import { ContextCard, ContextCardModal } from "./ContextCard";
 import { DecisionPanel } from "./DecisionPanel";
 import { ResultsView } from "./ResultsView";
 import { Stepper, type Phase } from "./Stepper";
+import { ReplayLoader } from "./ReplayLoader";
 import { getCard } from "@/lib/certification/cards";
 import type { ContextCardTemplate, Direction, ScenarioSpec } from "@/lib/certification/types";
 import {
@@ -61,6 +62,7 @@ export function WorkspaceRun({ scenario, isLast, onNext }: WorkspaceRunProps) {
   const essentials = useMemo(() => essentialCardIds(scenario), [scenario]);
 
   const [phase, setPhase] = useState<Phase>("research");
+  const [chartLoaded, setChartLoaded] = useState(false);
   const [openOrder, setOpenOrder] = useState<string[]>([]);
   const [activeCard, setActiveCard] = useState<ContextCardTemplate | null>(null);
   const [decision, setDecision] = useState<Direction | null>(null);
@@ -357,7 +359,11 @@ export function WorkspaceRun({ scenario, isLast, onNext }: WorkspaceRunProps) {
 
       <div className="grid gap-5 lg:grid-cols-[1.4fr_1fr]">
         <div className="space-y-3">
-          <CandleChart spec={scenario.chart} maxReveal={scenario.chart.shockAt} />
+          {chartLoaded ? (
+            <CandleChart spec={scenario.chart} maxReveal={scenario.chart.shockAt} />
+          ) : (
+            <ReplayLoader spec={scenario.chart} onLoad={() => setChartLoaded(true)} />
+          )}
         </div>
 
         <div className="space-y-3">

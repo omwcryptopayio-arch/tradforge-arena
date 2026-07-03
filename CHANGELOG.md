@@ -31,3 +31,33 @@ Indice de Cohérence (non pénalisant), Decision Journal + détection de biais.
 ### Notes
 - Frontend mock (aucun backend ce cycle). Persistance remplaçable par Lovable Cloud.
 - Visuels Bolt utilisés comme référence de structure uniquement ; Visual DNA du projet conservée.
+
+## 2024 — Sprint 4-5 · Refonte flux d'interaction + débrief premium
+
+### Ajouté
+- **`ReplayLoader`** : écran d'attente premium « Charger le Replay » ; le moteur
+  n'est monté qu'après action volontaire de l'utilisateur (Standard + Workspace).
+- **`DebriefPanel`** : panneau de débriefing restructuré, bascule **Rapide / Complète**,
+  hiérarchie progressive (réponse rapide → complète → analyse par réponse → outcome →
+  impact macro → key learning → métriques/cohérence).
+- **Types** : `McqOption.explain`, `ScenarioSpec.quickTake / keyLearning / macroImpact`
+  (optionnels, avec fallbacks).
+
+### Corrigé (UX)
+- **Replay continu** : `Replay → Pause → Réponse → reprise auto → dernière bougie →
+  outcome → débrief`. Plus d'image figée, plus de saut ; même cadence.
+- **Stabilité du layout** : le graphique reste ancré ; le débrief s'ouvre dessous
+  (fin du déplacement brutal du graphique après réponse).
+
+### Docs (Sprint 0-2, 9-10)
+- Création : `PRD.md`, `TASKS.md`, `ARCHITECTURE.md`, `IMPLEMENTATION_ROADMAP.md`,
+  `UI_GUIDELINES.md`, `BACKEND.md`, `DATABASE.md`, `COMPONENT_REGISTRY.md`,
+  `DECISION_LOG.md`, `SPRINTS.md`, `TEST_PLAN.md`, `RELEASE_PLAN.md`.
+- Mise à jour : `AGENTS.md` (règles d'exécution/planification/anti-régression),
+  `SENTINEL.md` (checklists étendues).
+
+### Reporté (documenté, non implémenté)
+- Context Cards V2 graphiques (charts/heatmaps/gauges) → V2.
+- Backend complet (schémas, RLS, migrations, analytics) → V2 (`BACKEND.md` / `DATABASE.md`).
+- Contenu enrichi `quickTake / keyLearning / explain / macroImpact` sur les 30 scénarios
+  (fallbacks actifs) → Sprint 6.
