@@ -359,7 +359,11 @@ export function WorkspaceRun({ scenario, isLast, onNext }: WorkspaceRunProps) {
 
       <div className="grid gap-5 lg:grid-cols-[1.4fr_1fr]">
         <div className="space-y-3">
-          <CandleChart spec={scenario.chart} maxReveal={scenario.chart.shockAt} />
+          {chartLoaded ? (
+            <CandleChart spec={scenario.chart} maxReveal={scenario.chart.shockAt} />
+          ) : (
+            <ReplayLoader spec={scenario.chart} onLoad={() => setChartLoaded(true)} />
+          )}
         </div>
 
         <div className="space-y-3">
