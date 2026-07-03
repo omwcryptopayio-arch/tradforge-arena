@@ -7,6 +7,7 @@ import { ContextCard, ContextCardModal } from "./ContextCard";
 import { DecisionPanel } from "./DecisionPanel";
 import { ResultsView } from "./ResultsView";
 import { Stepper, type Phase } from "./Stepper";
+import { ReplayLoader } from "./ReplayLoader";
 import { getCard } from "@/lib/certification/cards";
 import type { ContextCardTemplate, Direction, ScenarioSpec } from "@/lib/certification/types";
 import {
