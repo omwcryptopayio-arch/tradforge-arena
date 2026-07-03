@@ -69,6 +69,12 @@ export interface ScenarioSpec {
   correctDirection: Direction;
   rationale: string;
   outcome: string;
+  /** Debrief "Réponse rapide" — one-line institutional verdict (optional). */
+  quickTake?: string;
+  /** Debrief "Key Learning" — transferable takeaway (optional). */
+  keyLearning?: string;
+  /** Optional macro-impact bullets for the "Impact macro" debrief block. */
+  macroImpact?: string[];
   // Standard (MCQ engine)
   question?: string;
   options?: McqOption[];
