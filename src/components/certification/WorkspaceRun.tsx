@@ -62,6 +62,7 @@ export function WorkspaceRun({ scenario, isLast, onNext }: WorkspaceRunProps) {
   const essentials = useMemo(() => essentialCardIds(scenario), [scenario]);
 
   const [phase, setPhase] = useState<Phase>("research");
+  const [chartLoaded, setChartLoaded] = useState(false);
   const [openOrder, setOpenOrder] = useState<string[]>([]);
   const [activeCard, setActiveCard] = useState<ContextCardTemplate | null>(null);
   const [decision, setDecision] = useState<Direction | null>(null);
