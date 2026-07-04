@@ -14,16 +14,315 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      certificates_issued: {
+        Row: {
+          aggregate_score: number
+          candidate_name: string
+          chapter_id: string
+          hash: string
+          id: string
+          issued_at: string
+          levels: Json
+          user_id: string
+        }
+        Insert: {
+          aggregate_score?: number
+          candidate_name: string
+          chapter_id?: string
+          hash: string
+          id?: string
+          issued_at?: string
+          levels?: Json
+          user_id: string
+        }
+        Update: {
+          aggregate_score?: number
+          candidate_name?: string
+          chapter_id?: string
+          hash?: string
+          id?: string
+          issued_at?: string
+          levels?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
+      certification_attempts: {
+        Row: {
+          chapter_id: string
+          coherence: number | null
+          correct: boolean
+          created_at: string
+          direction: string | null
+          duration_ms: number
+          efficiency: number | null
+          essential_found: number | null
+          essential_total: number | null
+          id: string
+          level: string
+          opened_card_ids: Json
+          overtime_ms: number
+          scenario_id: string
+          scenario_index: number
+          score: number
+          user_id: string
+        }
+        Insert: {
+          chapter_id?: string
+          coherence?: number | null
+          correct?: boolean
+          created_at?: string
+          direction?: string | null
+          duration_ms?: number
+          efficiency?: number | null
+          essential_found?: number | null
+          essential_total?: number | null
+          id?: string
+          level: string
+          opened_card_ids?: Json
+          overtime_ms?: number
+          scenario_id: string
+          scenario_index?: number
+          score?: number
+          user_id: string
+        }
+        Update: {
+          chapter_id?: string
+          coherence?: number | null
+          correct?: boolean
+          created_at?: string
+          direction?: string | null
+          duration_ms?: number
+          efficiency?: number | null
+          essential_found?: number | null
+          essential_total?: number | null
+          id?: string
+          level?: string
+          opened_card_ids?: Json
+          overtime_ms?: number
+          scenario_id?: string
+          scenario_index?: number
+          score?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      certification_card_interactions: {
+        Row: {
+          attempt_id: string | null
+          card_id: string
+          created_at: string
+          duration_ms: number
+          id: string
+          opened_at_ms: number
+          reopens: number
+          scenario_id: string
+          user_id: string
+        }
+        Insert: {
+          attempt_id?: string | null
+          card_id: string
+          created_at?: string
+          duration_ms?: number
+          id?: string
+          opened_at_ms?: number
+          reopens?: number
+          scenario_id: string
+          user_id: string
+        }
+        Update: {
+          attempt_id?: string | null
+          card_id?: string
+          created_at?: string
+          duration_ms?: number
+          id?: string
+          opened_at_ms?: number
+          reopens?: number
+          scenario_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "certification_card_interactions_attempt_id_fkey"
+            columns: ["attempt_id"]
+            isOneToOne: false
+            referencedRelation: "certification_attempts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      certification_progress: {
+        Row: {
+          best_score: number
+          chapter_id: string
+          completed: number
+          completed_at: string | null
+          level: string
+          passed: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          best_score?: number
+          chapter_id?: string
+          completed?: number
+          completed_at?: string | null
+          level: string
+          passed?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          best_score?: number
+          chapter_id?: string
+          completed?: number
+          completed_at?: string | null
+          level?: string
+          passed?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      certification_reasoning: {
+        Row: {
+          attempt_id: string | null
+          bias: string | null
+          created_at: string
+          free_text: string | null
+          id: string
+          items: Json
+          scenario_id: string
+          user_id: string
+        }
+        Insert: {
+          attempt_id?: string | null
+          bias?: string | null
+          created_at?: string
+          free_text?: string | null
+          id?: string
+          items?: Json
+          scenario_id: string
+          user_id: string
+        }
+        Update: {
+          attempt_id?: string | null
+          bias?: string | null
+          created_at?: string
+          free_text?: string | null
+          id?: string
+          items?: Json
+          scenario_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "certification_reasoning_attempt_id_fkey"
+            columns: ["attempt_id"]
+            isOneToOne: false
+            referencedRelation: "certification_attempts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      decision_journal_entries: {
+        Row: {
+          attempt_id: string | null
+          bias: string | null
+          chapter_id: string
+          coherence: number
+          correct: boolean
+          created_at: string
+          direction: string
+          efficiency: number
+          id: string
+          level: string
+          reasoning: Json
+          scenario_id: string
+          symbol: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          attempt_id?: string | null
+          bias?: string | null
+          chapter_id?: string
+          coherence?: number
+          correct?: boolean
+          created_at?: string
+          direction: string
+          efficiency?: number
+          id?: string
+          level: string
+          reasoning?: Json
+          scenario_id: string
+          symbol: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          attempt_id?: string | null
+          bias?: string | null
+          chapter_id?: string
+          coherence?: number
+          correct?: boolean
+          created_at?: string
+          direction?: string
+          efficiency?: number
+          id?: string
+          level?: string
+          reasoning?: Json
+          scenario_id?: string
+          symbol?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "decision_journal_entries_attempt_id_fkey"
+            columns: ["attempt_id"]
+            isOneToOne: false
+            referencedRelation: "certification_attempts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +449,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+    },
   },
 } as const
