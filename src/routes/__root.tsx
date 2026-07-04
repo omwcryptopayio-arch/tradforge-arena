@@ -77,18 +77,27 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "The Evaluation Engine is a system for assessing learning scenarios and user performance." },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "The Evaluation Engine is a system for assessing learning scenarios and user performance." },
+      { title: "TradForge — Certification Macro Trading" },
+      {
+        name: "description",
+        content:
+          "TradForge Institut : certification de trading macro sur poste de travail institutionnel. Décide, justifie, mesure ta cohérence.",
+      },
+      { name: "author", content: "TradForge Institut" },
+      { property: "og:title", content: "TradForge — Certification Macro Trading" },
+      {
+        property: "og:description",
+        content:
+          "Un desk macro institutionnel pour apprendre le raisonnement de trading, pas la mémorisation.",
+      },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
-      { name: "twitter:title", content: "Lovable App" },
-      { name: "twitter:description", content: "The Evaluation Engine is a system for assessing learning scenarios and user performance." },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/VC1dGGbLE4amuOw6MMKqynOsgXC2/social-images/social-1783049284457-5915669018012487187.webp" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/VC1dGGbLE4amuOw6MMKqynOsgXC2/social-images/social-1783049284457-5915669018012487187.webp" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "TradForge — Certification Macro Trading" },
+      {
+        name: "twitter:description",
+        content:
+          "Un desk macro institutionnel pour apprendre le raisonnement de trading, pas la mémorisation.",
+      },
     ],
     links: [
       {
