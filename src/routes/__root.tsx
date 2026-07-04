@@ -129,6 +129,18 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
+  // Bootstrap an anonymous session and hydrate the local cache from the cloud.
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      const { hydrateFromCloud } = await import("../lib/certification/storage");
+      if (!cancelled) await hydrateFromCloud();
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
