@@ -246,7 +246,7 @@ export const getCertificationState = createServerFn({ method: "GET" })
         correct: j.correct as boolean,
         coherence: j.coherence as number,
         efficiency: j.efficiency as number,
-        reasoning: (j.reasoning ?? []) as unknown[],
+        reasoning: (j.reasoning ?? []) as z.infer<typeof reasoningItemSchema>[],
         bias: (j.bias ?? null) as string | null,
       })),
       progress: (progress.data ?? []).map((p) => ({
