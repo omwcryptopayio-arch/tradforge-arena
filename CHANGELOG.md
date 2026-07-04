@@ -61,3 +61,39 @@ Indice de Cohérence (non pénalisant), Decision Journal + détection de biais.
 - Backend complet (schémas, RLS, migrations, analytics) → V2 (`BACKEND.md` / `DATABASE.md`).
 - Contenu enrichi `quickTake / keyLearning / explain / macroImpact` sur les 30 scénarios
   (fallbacks actifs) → Sprint 6.
+
+## 2026-07-04 — V4.5 · Industrialisation & branchement backend (Phase 1)
+
+### Backend (Lovable Cloud — branché, plus de mock)
+- **Auth anonyme automatique** (`session.ts::ensureSession`) : persistance serveur
+  sans écran de login ; migration comptes nommés ultérieure.
+- **Schéma** (migration) : `user_roles` (+ `app_role`, `has_role()`),
+  `certification_attempts`, `certification_card_interactions`, `certification_reasoning`,
+  `certification_progress`, `decision_journal_entries`, `certificates_issued`.
+  RLS `auth.uid()` + GRANT explicites sur chaque table.
+- **Server functions** (`cloud.functions.ts`, `requireSupabaseAuth`) :
+  `submitAttempt` (scoring/progress recalculés serveur = source de vérité),
+  `recordCardInteractions`, `saveJournalEntry`, `getCertificationState`,
+  `issueCertificate`, `resetCertification`.
+- **`storage.ts`** refactorisé en couche write-through : cache localStorage synchrone
+  + mirroring cloud + `hydrateFromCloud()` au chargement (`__root.tsx`).
+- **Métadonnées** `__root.tsx` : titre/description/OG réels « TradForge Institut ».
+
+### Documentation — réorganisation en 2 familles (déplacement non destructif)
+- `docs/implementation/` : PRD, TASKS, ARCHITECTURE, SPRINTS, IMPLEMENTATION_ROADMAP,
+  TEST_PLAN, DECISION_LOG, BACKEND, DATABASE, `ch1/*`.
+- `docs/standards/` : CERTIFICATION_ENGINE_ARCHITECTURE, COMPONENT_REGISTRY, MODULE_SPECS,
+  CERTIFICATION_DESIGN_SYSTEM, EVALUATION_ENGINE_STANDARDS, SCENARIO_TEMPLATE,
+  QUESTION_BANK_SPEC, SCORING_ENGINE_SPEC, PROGRESSION_ENGINE, DIFFICULTY_SPEC,
+  CERTIFICATION_BLUEPRINT, AGENT_PLAYBOOK, REPLICATION_CHECKLIST, UI_GUIDELINES.
+- `docs/README.md` : index des deux familles.
+- Points d'entrée agents conservés à la racine : `AGENTS.md`, `SENTINEL.md`, `CHANGELOG.md`.
+
+### Sécurité
+- Warnings linter « anonymous access » : **intentionnels** (sessions anonymes voulues,
+  policies scopées `auth.uid()`). Documenté dans la mémoire sécurité.
+
+### À venir (Phase 2, ordre validé)
+- Context Cards Premium graphiques (desk institutionnel, data-viz), banque de scénarios
+  paramétrique, chart 2e délimiteur + HUD pips, timer Premium 2:30 dégressif,
+  certificat PDF téléchargeable, contenu enrichi.
