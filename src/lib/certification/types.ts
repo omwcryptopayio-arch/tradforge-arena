@@ -30,6 +30,23 @@ export interface ChartSpec {
   supportLabel?: string;
   resistanceLabel?: string;
   eventLabel: string; // vertical decision line annotation
+  /** 2nd vertical delimiter — end of the analysis window (post = dimmed context). */
+  decisionWindowEnd?: number;
+  /** Technical annotations rendered on the chart (break / retest / zone). */
+  techAnnotations?: TechAnnotation[];
+  /** Optional trend channel (two parallel lines across the reveal). */
+  channel?: { fromIndex: number; toIndex: number; slope: number; halfWidth: number };
+}
+
+export type TechAnnotationKind = "break" | "retest" | "zone";
+
+export interface TechAnnotation {
+  kind: TechAnnotationKind;
+  label: string;
+  tone?: "primary" | "danger" | "muted" | "bull" | "bear";
+  atIndex?: number; // for break / retest
+  fromIndex?: number; // for zone
+  toIndex?: number; // for zone
 }
 
 export interface McqOption {
