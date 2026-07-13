@@ -190,6 +190,77 @@ export function CandleChart({
           </g>
         )}
 
+        {/* 2nd delimiter — end of analysis window */}
+        {winEndRevealed && winEnd != null && (
+          <g>
+            <rect
+              x={scaleX(winEnd)}
+              y={PAD_T}
+              width={Math.max(0, VB_W - PAD_R - scaleX(winEnd))}
+              height={VB_H - PAD_T - PAD_B}
+              fill="var(--muted-foreground)"
+              opacity={0.06}
+            />
+            <line
+              x1={scaleX(winEnd)}
+              x2={scaleX(winEnd)}
+              y1={PAD_T}
+              y2={VB_H - PAD_B}
+              stroke="var(--muted-foreground)"
+              strokeWidth={1.25}
+              strokeDasharray="2 4"
+              opacity={0.7}
+            />
+            <text
+              x={scaleX(winEnd) + 6}
+              y={PAD_T + 24}
+              className="fill-muted-foreground font-mono"
+              fontSize={10}
+            >
+              Fin fenêtre d'analyse
+            </text>
+          </g>
+        )}
+
+        {/* technical annotations (break / retest / zone) */}
+        {(spec.techAnnotations ?? []).map((a, k) => {
+          const tone =
+            a.tone === "danger" || a.tone === "bear"
+              ? "var(--bear)"
+              : a.tone === "bull"
+                ? "var(--bull)"
+                : a.tone === "muted"
+                  ? "var(--muted-foreground)"
+                  : "var(--primary)";
+          if (a.kind === "zone" && a.fromIndex != null && a.toIndex != null) {
+            if (cur <= a.fromIndex) return null;
+            const x = scaleX(a.fromIndex);
+            const w = scaleX(a.toIndex) - x;
+            return (
+              <g key={k}>
+                <rect x={x} y={PAD_T} width={w} height={VB_H - PAD_T - PAD_B} fill={tone} opacity={0.08} />
+                <text x={x + 4} y={PAD_T + 12} fill={tone} className="font-mono" fontSize={9}>
+                  {a.label}
+                </text>
+              </g>
+            );
+          }
+          if (a.atIndex != null) {
+            if (cur <= a.atIndex) return null;
+            const x = scaleX(a.atIndex);
+            return (
+              <g key={k}>
+                <line x1={x} x2={x} y1={PAD_T} y2={VB_H - PAD_B} stroke={tone} strokeWidth={1} strokeDasharray="1 3" opacity={0.6} />
+                <circle cx={x} cy={VB_H - PAD_B - 6} r={2.5} fill={tone} />
+                <text x={x + 4} y={VB_H - PAD_B - 8} fill={tone} className="font-mono" fontSize={9}>
+                  {a.label}
+                </text>
+              </g>
+            );
+          }
+          return null;
+        })}
+
         {/* candles */}
         {visible.map((c) => {
           const x = scaleX(c.i);
@@ -200,8 +271,9 @@ export function CandleChart({
           const yC = scaleY(c.c);
           const bodyTop = Math.min(yO, yC);
           const bodyH = Math.max(1.5, Math.abs(yC - yO));
+          const postWindow = winEnd != null && c.i > winEnd;
           return (
-            <g key={c.i}>
+            <g key={c.i} opacity={postWindow ? 0.4 : 1}>
               <line x1={x} x2={x} y1={yHigh} y2={yLow} stroke={color} strokeWidth={1.2} />
               <rect
                 x={x - candleW / 2}
