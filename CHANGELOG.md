@@ -97,3 +97,9 @@ Indice de Cohérence (non pénalisant), Decision Journal + détection de biais.
 - Context Cards Premium graphiques (desk institutionnel, data-viz), banque de scénarios
   paramétrique, chart 2e délimiteur + HUD pips, timer Premium 2:30 dégressif,
   certificat PDF téléchargeable, contenu enrichi.
+
+## V4.5 — Timer Premium + HUD chart + Certificat PDF (2026-07-13)
+- Chart: 2e délimiteur (fin de fenêtre) + HUD reveal (fenêtre, bougies, pips, direction) + annotations techniques (break/retest/zone) sur prm-3.
+- Context Cards Premium graphiques (recharts, badges LEAD/LAG, delta chips) branchées desk EUR/USD.
+- Timer décision Premium: base 2:30, -7s/scénario, non bloquant, passage rouge « Dépassement », overtime persisté (overtimeMs).
+- Certificat PDF « TradForge Institut » (pdf-lib, paysage A4, sceau, scores par niveau, score agrégé, hash de vérification) téléchargeable depuis le hub une fois les 3 niveaux validés.
