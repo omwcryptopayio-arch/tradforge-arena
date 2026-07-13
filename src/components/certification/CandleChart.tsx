@@ -288,6 +288,44 @@ export function CandleChart({
         })}
       </svg>
 
+      {/* HUD reveal — shown once the full series is on screen (outcome) */}
+      {fullyRevealed && (
+        <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+          {[
+            { label: "Fenêtre", value: `${spec.shockAt}–${winEnd ?? total}` },
+            { label: "Bougies", value: `${total}` },
+            {
+              label: "Pips réalisés",
+              value: `${realizedPips >= 0 ? "+" : ""}${realizedPips}`,
+              tone: finalDir,
+            },
+            {
+              label: "Direction",
+              value: finalDir === "bull" ? "Haussier" : finalDir === "bear" ? "Baissier" : "Neutre",
+              tone: finalDir,
+            },
+          ].map((m) => (
+            <div key={m.label} className="rounded-lg border border-border bg-surface p-2.5">
+              <div className="label-mono text-[9px] text-muted-foreground">{m.label}</div>
+              <div
+                className={cn(
+                  "font-mono text-sm font-semibold",
+                  m.tone === "bull"
+                    ? "text-bull"
+                    : m.tone === "bear"
+                      ? "text-bear"
+                      : "text-foreground",
+                )}
+              >
+                {m.value}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+
+
       {/* Replay control */}
       <div className="mt-3 flex items-center gap-3">
         <button
