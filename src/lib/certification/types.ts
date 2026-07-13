@@ -39,6 +39,54 @@ export interface McqOption {
   explain?: string;
 }
 
+/** Where a series/indicator sits in the economic cycle (desk taxonomy). */
+export type CycleClass = "lead" | "coin" | "lag";
+
+/** Print vs consensus classification for data-release cards. */
+export type PrintVerdict = "beat" | "miss" | "inline";
+
+/** A single labelled statistic shown in the analyst grid. */
+export interface CardStat {
+  label: string;
+  value: string;
+  tone?: Direction;
+}
+
+/** A named timeframe with its own price/level series (3M · 1M · Daily · Zoom). */
+export interface CardTimeframe {
+  label: string; // "3M" · "1M" · "Daily" · "Zoom"
+  series: number[]; // ordered oldest → newest
+  /** Optional horizontal reference levels drawn on the chart. */
+  levels?: { value: number; label: string; tone?: Direction }[];
+}
+
+/**
+ * Graphical dataset powering the analyst (Premium) Context Card.
+ * Raw data only — never a written conclusion. The learner deduces.
+ */
+export interface ContextCardDataset {
+  /** Sparkline series shown on the rail card (oldest → newest). */
+  spark: number[];
+  sparkTone?: Direction;
+  /** Compact delta chip on the rail card, e.g. "+18 bps 5j". */
+  deltaLabel?: string;
+  deltaTone?: Direction;
+  /** Cycle taxonomy badge (LEAD / COIN / LAG). */
+  cycle?: CycleClass;
+  /** Print verdict badge (BEAT / MISS / INLINE) for release cards. */
+  verdict?: PrintVerdict;
+  /** Actual / consensus / previous for release cards. */
+  actual?: string;
+  consensus?: string;
+  previous?: string;
+  /** Unit shown on the analyst chart axis, e.g. "%", "bps", "index". */
+  unit?: string;
+  /** Multi-timeframe series (analyst chart). First entry is the default view. */
+  timeframes?: CardTimeframe[];
+  /** Labelled statistics grid (spreads, ratios, extremes…). */
+  stats?: CardStat[];
+}
+
 /** Reusable context card template (catalog). Relevance is per-scenario, not here. */
 export interface ContextCardTemplate {
   id: string;
@@ -49,7 +97,12 @@ export interface ContextCardTemplate {
   metric?: string;
   metricTone?: Direction;
   detail: { heading: string; body: string }[];
+  /** Graphical dataset for analyst-mode (Premium) rendering. */
+  dataset?: ContextCardDataset;
 }
+
+/** Presentation mode for a Context Card. */
+export type CardRenderMode = "guided" | "analyst";
 
 /** Binding of a catalog card into a scenario, with internal relevance. */
 export interface ScenarioCardRef {
