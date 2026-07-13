@@ -130,6 +130,8 @@ function Hub() {
             );
           })}
         </div>
+
+        <CertificatePanel />
       </div>
     </div>
   );
