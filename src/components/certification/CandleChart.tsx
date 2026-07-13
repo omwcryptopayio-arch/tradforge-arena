@@ -78,10 +78,20 @@ export function CandleChart({
   const candleW = ((VB_W - PAD_L - PAD_R) / total) * 0.62;
   const visible = geo.candles.slice(0, cur);
   const shockRevealed = cur > spec.shockAt;
+  const winEnd = spec.decisionWindowEnd;
+  const winEndRevealed = winEnd != null && cur > winEnd;
   const lastVisible = visible[visible.length - 1];
   const shownLast = lastVisible ? lastVisible.c : geo.candles[0].o;
   const shownChange =
     ((shownLast - geo.candles[0].o) / geo.candles[0].o) * 100;
+
+  // HUD reveal: available once the full series is on screen (outcome phase).
+  const fullyRevealed = cur >= total;
+  const pipFactor = Math.pow(10, spec.precision === 2 || spec.precision === 3 ? 2 : 4);
+  const eventClose = geo.candles[spec.shockAt]?.c ?? geo.candles[0].o;
+  const finalClose = geo.candles[total - 1].c;
+  const realizedPips = Math.round((finalClose - eventClose) * pipFactor);
+  const finalDir = realizedPips > 3 ? "bull" : realizedPips < -3 ? "bear" : "neutral";
 
   const replay = () => {
     reachedRef.current = false;
