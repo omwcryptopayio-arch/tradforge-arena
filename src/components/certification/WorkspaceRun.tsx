@@ -388,6 +388,7 @@ export function WorkspaceRun({ scenario, isLast, onNext }: WorkspaceRunProps) {
                 card={c.template}
                 viewed={viewedSet.has(c.template.id)}
                 onOpen={() => openCard(c.template)}
+                mode={isPremium ? "analyst" : "guided"}
               />
             ))}
           </div>
