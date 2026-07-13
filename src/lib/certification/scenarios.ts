@@ -4,11 +4,15 @@
 import type { ScenarioSpec, ScenarioCardRef, ChartSpec } from "./types";
 
 function chart(p: Partial<ChartSpec> & Pick<ChartSpec, "symbol" | "period" | "seed" | "basePrice" | "precision" | "shockMagnitude" | "eventLabel">): ChartSpec {
+  const candles = p.candles ?? 60;
+  const shockAt = p.shockAt ?? 34;
   return {
-    candles: 60,
+    candles,
     volatility: 0.006,
     drift: 0,
-    shockAt: 34,
+    shockAt,
+    // 2nd delimiter: analysis window closes ~40% of the way from shock to the end.
+    decisionWindowEnd: Math.min(candles - 4, shockAt + Math.round((candles - shockAt) * 0.45)),
     support: undefined,
     resistance: undefined,
     ...p,
