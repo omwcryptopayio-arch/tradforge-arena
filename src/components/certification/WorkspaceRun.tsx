@@ -344,7 +344,10 @@ export function WorkspaceRun({ scenario, isLast, onNext }: WorkspaceRunProps) {
   if (phase === "decision") {
     return (
       <div className="space-y-5">
-        <Stepper current="decision" />
+        <div className="flex items-center justify-between gap-3">
+          <Stepper current="decision" />
+          {isPremium && <DecisionTimer state={timer} />}
+        </div>
         <CandleChart spec={scenario.chart} maxReveal={scenario.chart.shockAt} autoPlay={false} />
         <div className="rounded-xl border border-border bg-surface/60 p-5">
           <DecisionPanel onDecide={onDecide} />
