@@ -106,6 +106,7 @@ export function WorkspaceRun({ scenario, isLast, onNext }: WorkspaceRunProps) {
   const onDecide = (dir: Direction) => {
     setDecision(dir);
     if (isPremium) {
+      setOvertimeMs(timer.overtimeMs);
       // seed declarations for viewed cards
       const seed: Record<string, Declaration> = {};
       for (const c of cards) {
