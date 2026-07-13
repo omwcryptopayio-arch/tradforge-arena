@@ -366,8 +366,12 @@ export function WorkspaceRun({ scenario, isLast, onNext }: WorkspaceRunProps) {
   // ── RESEARCH ──
   return (
     <div className="space-y-5">
-      <Stepper current="research" />
+      <div className="flex items-center justify-between gap-3">
+        <Stepper current="research" />
+        {isPremium && chartLoaded && <DecisionTimer state={timer} />}
+      </div>
       <p className="text-sm leading-relaxed text-muted-foreground">{scenario.brief}</p>
+
 
       <div className="grid gap-5 lg:grid-cols-[1.4fr_1fr]">
         <div className="space-y-3">
