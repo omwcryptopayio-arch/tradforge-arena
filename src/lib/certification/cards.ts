@@ -2,8 +2,9 @@
 // Cards are instrument/theme templates; per-scenario relevance lives on ScenarioCardRef.
 
 import type { ContextCardTemplate } from "./types";
+import { datasetFor } from "./card-datasets";
 
-export const CONTEXT_CARDS: ContextCardTemplate[] = [
+const RAW_CARDS: ContextCardTemplate[] = [
   {
     id: "dxy",
     ticker: "DXY",
