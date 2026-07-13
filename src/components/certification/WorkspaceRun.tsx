@@ -152,7 +152,9 @@ export function WorkspaceRun({ scenario, isLast, onNext }: WorkspaceRunProps) {
       essentialFound,
       essentialTotal: essentials.length,
       coherence,
+      overtimeMs,
     });
+
 
     const declaredNotOpened = declaredIds.filter((id) => !viewedSet.has(id)).length;
     addJournalEntry({
