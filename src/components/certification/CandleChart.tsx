@@ -78,10 +78,20 @@ export function CandleChart({
   const candleW = ((VB_W - PAD_L - PAD_R) / total) * 0.62;
   const visible = geo.candles.slice(0, cur);
   const shockRevealed = cur > spec.shockAt;
+  const winEnd = spec.decisionWindowEnd;
+  const winEndRevealed = winEnd != null && cur > winEnd;
   const lastVisible = visible[visible.length - 1];
   const shownLast = lastVisible ? lastVisible.c : geo.candles[0].o;
   const shownChange =
     ((shownLast - geo.candles[0].o) / geo.candles[0].o) * 100;
+
+  // HUD reveal: available once the full series is on screen (outcome phase).
+  const fullyRevealed = cur >= total;
+  const pipFactor = Math.pow(10, spec.precision === 2 || spec.precision === 3 ? 2 : 4);
+  const eventClose = geo.candles[spec.shockAt]?.c ?? geo.candles[0].o;
+  const finalClose = geo.candles[total - 1].c;
+  const realizedPips = Math.round((finalClose - eventClose) * pipFactor);
+  const finalDir = realizedPips > 3 ? "bull" : realizedPips < -3 ? "bear" : "neutral";
 
   const replay = () => {
     reachedRef.current = false;
@@ -180,6 +190,77 @@ export function CandleChart({
           </g>
         )}
 
+        {/* 2nd delimiter — end of analysis window */}
+        {winEndRevealed && winEnd != null && (
+          <g>
+            <rect
+              x={scaleX(winEnd)}
+              y={PAD_T}
+              width={Math.max(0, VB_W - PAD_R - scaleX(winEnd))}
+              height={VB_H - PAD_T - PAD_B}
+              fill="var(--muted-foreground)"
+              opacity={0.06}
+            />
+            <line
+              x1={scaleX(winEnd)}
+              x2={scaleX(winEnd)}
+              y1={PAD_T}
+              y2={VB_H - PAD_B}
+              stroke="var(--muted-foreground)"
+              strokeWidth={1.25}
+              strokeDasharray="2 4"
+              opacity={0.7}
+            />
+            <text
+              x={scaleX(winEnd) + 6}
+              y={PAD_T + 24}
+              className="fill-muted-foreground font-mono"
+              fontSize={10}
+            >
+              Fin fenêtre d'analyse
+            </text>
+          </g>
+        )}
+
+        {/* technical annotations (break / retest / zone) */}
+        {(spec.techAnnotations ?? []).map((a, k) => {
+          const tone =
+            a.tone === "danger" || a.tone === "bear"
+              ? "var(--bear)"
+              : a.tone === "bull"
+                ? "var(--bull)"
+                : a.tone === "muted"
+                  ? "var(--muted-foreground)"
+                  : "var(--primary)";
+          if (a.kind === "zone" && a.fromIndex != null && a.toIndex != null) {
+            if (cur <= a.fromIndex) return null;
+            const x = scaleX(a.fromIndex);
+            const w = scaleX(a.toIndex) - x;
+            return (
+              <g key={k}>
+                <rect x={x} y={PAD_T} width={w} height={VB_H - PAD_T - PAD_B} fill={tone} opacity={0.08} />
+                <text x={x + 4} y={PAD_T + 12} fill={tone} className="font-mono" fontSize={9}>
+                  {a.label}
+                </text>
+              </g>
+            );
+          }
+          if (a.atIndex != null) {
+            if (cur <= a.atIndex) return null;
+            const x = scaleX(a.atIndex);
+            return (
+              <g key={k}>
+                <line x1={x} x2={x} y1={PAD_T} y2={VB_H - PAD_B} stroke={tone} strokeWidth={1} strokeDasharray="1 3" opacity={0.6} />
+                <circle cx={x} cy={VB_H - PAD_B - 6} r={2.5} fill={tone} />
+                <text x={x + 4} y={VB_H - PAD_B - 8} fill={tone} className="font-mono" fontSize={9}>
+                  {a.label}
+                </text>
+              </g>
+            );
+          }
+          return null;
+        })}
+
         {/* candles */}
         {visible.map((c) => {
           const x = scaleX(c.i);
@@ -190,8 +271,9 @@ export function CandleChart({
           const yC = scaleY(c.c);
           const bodyTop = Math.min(yO, yC);
           const bodyH = Math.max(1.5, Math.abs(yC - yO));
+          const postWindow = winEnd != null && c.i > winEnd;
           return (
-            <g key={c.i}>
+            <g key={c.i} opacity={postWindow ? 0.4 : 1}>
               <line x1={x} x2={x} y1={yHigh} y2={yLow} stroke={color} strokeWidth={1.2} />
               <rect
                 x={x - candleW / 2}
@@ -205,6 +287,44 @@ export function CandleChart({
           );
         })}
       </svg>
+
+      {/* HUD reveal — shown once the full series is on screen (outcome) */}
+      {fullyRevealed && (
+        <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+          {[
+            { label: "Fenêtre", value: `${spec.shockAt}–${winEnd ?? total}` },
+            { label: "Bougies", value: `${total}` },
+            {
+              label: "Pips réalisés",
+              value: `${realizedPips >= 0 ? "+" : ""}${realizedPips}`,
+              tone: finalDir,
+            },
+            {
+              label: "Direction",
+              value: finalDir === "bull" ? "Haussier" : finalDir === "bear" ? "Baissier" : "Neutre",
+              tone: finalDir,
+            },
+          ].map((m) => (
+            <div key={m.label} className="rounded-lg border border-border bg-surface p-2.5">
+              <div className="label-mono text-[9px] text-muted-foreground">{m.label}</div>
+              <div
+                className={cn(
+                  "font-mono text-sm font-semibold",
+                  m.tone === "bull"
+                    ? "text-bull"
+                    : m.tone === "bear"
+                      ? "text-bear"
+                      : "text-foreground",
+                )}
+              >
+                {m.value}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+
 
       {/* Replay control */}
       <div className="mt-3 flex items-center gap-3">

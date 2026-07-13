@@ -4,11 +4,15 @@
 import type { ScenarioSpec, ScenarioCardRef, ChartSpec } from "./types";
 
 function chart(p: Partial<ChartSpec> & Pick<ChartSpec, "symbol" | "period" | "seed" | "basePrice" | "precision" | "shockMagnitude" | "eventLabel">): ChartSpec {
+  const candles = p.candles ?? 60;
+  const shockAt = p.shockAt ?? 34;
   return {
-    candles: 60,
+    candles,
     volatility: 0.006,
     drift: 0,
-    shockAt: 34,
+    shockAt,
+    // 2nd delimiter: analysis window closes ~40% of the way from shock to the end.
+    decisionWindowEnd: Math.min(candles - 4, shockAt + Math.round((candles - shockAt) * 0.45)),
     support: undefined,
     resistance: undefined,
     ...p,
@@ -295,11 +299,19 @@ export const PREMIUM: ScenarioSpec[] = [
   },
   {
     id: "prm-3", level: "premium", index: 3, title: "Divergent central banks", symbol: "EUR/USD",
-    brief: "Signaux contradictoires : la BCE tergiverse, la Fed reste data-dependent. Tri du signal exigé.",
-    chart: chart({ symbol: "EUR/USD", period: "H4", seed: 313, basePrice: 1.085, precision: 4, shockMagnitude: -0.012, support: 1.072, supportLabel: "Support 1.0720", eventLabel: "Guidance divergente" }),
+    brief: "Signaux contradictoires : la BCE tergiverse, la Fed reste data-dependent, les spreads souverains s'écartent. Tri du signal exigé.",
+    chart: chart({
+      symbol: "EUR/USD", period: "H4", seed: 313, basePrice: 1.085, precision: 4, shockMagnitude: -0.012,
+      support: 1.072, supportLabel: "Support 1.0720", eventLabel: "Guidance divergente",
+      techAnnotations: [
+        { kind: "zone", fromIndex: 30, toIndex: 34, label: "Zone décision", tone: "primary" },
+        { kind: "break", atIndex: 36, label: "Break support", tone: "danger" },
+        { kind: "retest", atIndex: 44, label: "Retest", tone: "muted" },
+      ],
+    }),
     correctDirection: "bear",
-    cards: [ref("ecb", 86), ref("fed", 84), ref("us10y", 78), ref("cpi", 70), ref("oil", 34), ref("gold", 26), ref("vix", 30)],
-    rationale: "Sur l'ensemble des drivers, le différentiel penche pour l'USD ; l'euro manque de catalyseur haussier. Biais baissier mesuré.",
+    cards: [ref("ecb", 86), ref("bcerate", 84), ref("us10y", 80), ref("bund10y", 78), ref("spreads", 74), ref("yieldcurve", 70), ref("gdp", 60), ref("fed", 84), ref("cpi", 66), ref("oil", 34), ref("gold", 26), ref("vix", 30)],
+    rationale: "Sur l'ensemble des drivers, le différentiel penche pour l'USD ; l'écartement des spreads souverains (BTP-Bund) trahit un stress périphérique et l'euro manque de catalyseur haussier. Biais baissier mesuré.",
     outcome: "EUR/USD a lentement dérivé vers 1.0720.",
   },
   {

@@ -2,8 +2,9 @@
 // Cards are instrument/theme templates; per-scenario relevance lives on ScenarioCardRef.
 
 import type { ContextCardTemplate } from "./types";
+import { datasetFor } from "./card-datasets";
 
-export const CONTEXT_CARDS: ContextCardTemplate[] = [
+const RAW_CARDS: ContextCardTemplate[] = [
   {
     id: "dxy",
     ticker: "DXY",
@@ -238,7 +239,79 @@ export const CONTEXT_CARDS: ContextCardTemplate[] = [
       { heading: "IMPLICATION", body: "Support holding favours continuation; a clean break flips the structure." },
     ],
   },
+  // ── Desk cards (Premium contagion / rates) ──
+  {
+    id: "bund10y",
+    ticker: "BUND10Y",
+    category: "macro",
+    title: "Bund 10Y",
+    summary: "Rendement souverain allemand — ancre des taux longs zone euro.",
+    metric: "2.85%",
+    metricTone: "bull",
+    detail: [
+      { heading: "MOVE", body: "Le Bund se tend par sympathie avec les gilts et les Treasuries lors d'un stress de taux mondial." },
+      { heading: "IMPLICATION", body: "Un Bund vendu en régime de crise accompagne un EUR fragilisé face au dollar refuge." },
+    ],
+  },
+  {
+    id: "bcerate",
+    ticker: "BCE",
+    category: "centralbank",
+    title: "Taux BCE",
+    summary: "Taux de dépôt et trajectoire relative à la Fed.",
+    metric: "4.00%",
+    metricTone: "bull",
+    detail: [
+      { heading: "GUIDANCE", body: "La BCE maintient un taux de dépôt élevé après un cycle de +450 bps." },
+      { heading: "IMPLICATION", body: "L'écart de politique avec la Fed pilote la direction de fond d'EUR/USD." },
+    ],
+  },
+  {
+    id: "spreads",
+    ticker: "SPREADS",
+    category: "intermarket",
+    title: "Spreads souverains",
+    summary: "BTP-Bund, OAT-Bund, Bono-Bund — thermomètre de fragmentation.",
+    metric: "192 bps",
+    metricTone: "bear",
+    detail: [
+      { heading: "READING", body: "L'élargissement des spreads périphériques signale un stress systémique en zone euro." },
+      { heading: "IMPLICATION", body: "Fragmentation = prime de risque EUR ; contagion possible depuis un choc externe." },
+    ],
+  },
+  {
+    id: "gdp",
+    ticker: "GDP",
+    category: "macro",
+    title: "PIB",
+    summary: "Croissance trimestrielle annualisée vs consensus.",
+    metric: "+3.3%",
+    metricTone: "bull",
+    detail: [
+      { heading: "DATA", body: "Une surprise de croissance renforce les anticipations de taux et la devise associée." },
+      { heading: "IMPLICATION", body: "PIB > consensus = soutien devise via le canal des taux, sauf inflexion de la banque centrale." },
+    ],
+  },
+  {
+    id: "yieldcurve",
+    ticker: "CURVE",
+    category: "macro",
+    title: "Courbe des taux",
+    summary: "Pentes 2s10s / 3m10y — régime cyclique.",
+    metric: "-38 bps",
+    metricTone: "bear",
+    detail: [
+      { heading: "READING", body: "Une courbe inversée reflète un resserrement avancé et un risque de ralentissement." },
+      { heading: "IMPLICATION", body: "La désinversion (bull steepening) accompagne souvent le pivot des banques centrales." },
+    ],
+  },
 ];
+
+// Enrich every card with its deterministic graphical dataset (analyst mode).
+export const CONTEXT_CARDS: ContextCardTemplate[] = RAW_CARDS.map((c) => ({
+  ...c,
+  dataset: c.dataset ?? datasetFor(c.id),
+}));
 
 export const CARD_BY_ID = new Map(CONTEXT_CARDS.map((c) => [c.id, c]));
 

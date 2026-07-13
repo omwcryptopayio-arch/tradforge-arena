@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { ArrowRight, BookOpen, Lock, CheckCircle2 } from "lucide-react";
 import { Stars } from "@/components/certification/Stars";
+import { CertificatePanel } from "@/components/certification/CertificatePanel";
 import { LEVEL_META, type Level } from "@/lib/certification/types";
 import { getScenarios } from "@/lib/certification/scenarios";
 import { levelSummary, type LevelSummary } from "@/lib/certification/storage";
@@ -129,6 +130,8 @@ function Hub() {
             );
           })}
         </div>
+
+        <CertificatePanel />
       </div>
     </div>
   );

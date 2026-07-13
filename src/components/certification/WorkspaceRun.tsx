@@ -8,6 +8,8 @@ import { DecisionPanel } from "./DecisionPanel";
 import { ResultsView } from "./ResultsView";
 import { Stepper, type Phase } from "./Stepper";
 import { ReplayLoader } from "./ReplayLoader";
+import { DecisionTimer } from "./DecisionTimer";
+import { useDecisionTimer } from "@/hooks/useDecisionTimer";
 import { getCard } from "@/lib/certification/cards";
 import type { ContextCardTemplate, Direction, ScenarioSpec } from "@/lib/certification/types";
 import {
@@ -66,7 +68,11 @@ export function WorkspaceRun({ scenario, isLast, onNext }: WorkspaceRunProps) {
   const [openOrder, setOpenOrder] = useState<string[]>([]);
   const [activeCard, setActiveCard] = useState<ContextCardTemplate | null>(null);
   const [decision, setDecision] = useState<Direction | null>(null);
+  const [overtimeMs, setOvertimeMs] = useState(0);
   const [declarations, setDeclarations] = useState<Record<string, Declaration>>({});
+
+  // Premium decision timer: runs from replay load until the direction is chosen.
+  const timer = useDecisionTimer(scenario.index, isPremium && chartLoaded && decision === null);
 
   const viewedSet = new Set(openOrder);
   const essentialFound = essentials.filter((id) => viewedSet.has(id)).length;
@@ -100,6 +106,7 @@ export function WorkspaceRun({ scenario, isLast, onNext }: WorkspaceRunProps) {
   const onDecide = (dir: Direction) => {
     setDecision(dir);
     if (isPremium) {
+      setOvertimeMs(timer.overtimeMs);
       // seed declarations for viewed cards
       const seed: Record<string, Declaration> = {};
       for (const c of cards) {
@@ -145,7 +152,9 @@ export function WorkspaceRun({ scenario, isLast, onNext }: WorkspaceRunProps) {
       essentialFound,
       essentialTotal: essentials.length,
       coherence,
+      overtimeMs,
     });
+
 
     const declaredNotOpened = declaredIds.filter((id) => !viewedSet.has(id)).length;
     addJournalEntry({
@@ -335,7 +344,10 @@ export function WorkspaceRun({ scenario, isLast, onNext }: WorkspaceRunProps) {
   if (phase === "decision") {
     return (
       <div className="space-y-5">
-        <Stepper current="decision" />
+        <div className="flex items-center justify-between gap-3">
+          <Stepper current="decision" />
+          {isPremium && <DecisionTimer state={timer} />}
+        </div>
         <CandleChart spec={scenario.chart} maxReveal={scenario.chart.shockAt} autoPlay={false} />
         <div className="rounded-xl border border-border bg-surface/60 p-5">
           <DecisionPanel onDecide={onDecide} />
@@ -354,8 +366,12 @@ export function WorkspaceRun({ scenario, isLast, onNext }: WorkspaceRunProps) {
   // ── RESEARCH ──
   return (
     <div className="space-y-5">
-      <Stepper current="research" />
+      <div className="flex items-center justify-between gap-3">
+        <Stepper current="research" />
+        {isPremium && chartLoaded && <DecisionTimer state={timer} />}
+      </div>
       <p className="text-sm leading-relaxed text-muted-foreground">{scenario.brief}</p>
+
 
       <div className="grid gap-5 lg:grid-cols-[1.4fr_1fr]">
         <div className="space-y-3">
@@ -388,6 +404,7 @@ export function WorkspaceRun({ scenario, isLast, onNext }: WorkspaceRunProps) {
                 card={c.template}
                 viewed={viewedSet.has(c.template.id)}
                 onOpen={() => openCard(c.template)}
+                mode={isPremium ? "analyst" : "guided"}
               />
             ))}
           </div>
@@ -407,6 +424,7 @@ export function WorkspaceRun({ scenario, isLast, onNext }: WorkspaceRunProps) {
         card={activeCard}
         cardNumber={activeCard ? openOrder.indexOf(activeCard.id) + 1 : undefined}
         cardTotal={cards.length}
+        mode={isPremium ? "analyst" : "guided"}
         onClose={() => setActiveCard(null)}
       />
     </div>
