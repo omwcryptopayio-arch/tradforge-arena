@@ -68,7 +68,11 @@ export function WorkspaceRun({ scenario, isLast, onNext }: WorkspaceRunProps) {
   const [openOrder, setOpenOrder] = useState<string[]>([]);
   const [activeCard, setActiveCard] = useState<ContextCardTemplate | null>(null);
   const [decision, setDecision] = useState<Direction | null>(null);
+  const [overtimeMs, setOvertimeMs] = useState(0);
   const [declarations, setDeclarations] = useState<Record<string, Declaration>>({});
+
+  // Premium decision timer: runs from replay load until the direction is chosen.
+  const timer = useDecisionTimer(scenario.index, isPremium && chartLoaded && decision === null);
 
   const viewedSet = new Set(openOrder);
   const essentialFound = essentials.filter((id) => viewedSet.has(id)).length;
