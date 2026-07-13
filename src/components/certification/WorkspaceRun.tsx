@@ -408,6 +408,7 @@ export function WorkspaceRun({ scenario, isLast, onNext }: WorkspaceRunProps) {
         card={activeCard}
         cardNumber={activeCard ? openOrder.indexOf(activeCard.id) + 1 : undefined}
         cardTotal={cards.length}
+        mode={isPremium ? "analyst" : "guided"}
         onClose={() => setActiveCard(null)}
       />
     </div>
