@@ -287,6 +287,93 @@ export type Database = {
           },
         ]
       }
+      platform_flags: {
+        Row: {
+          enabled: boolean
+          key: string
+          updated_at: string
+          value: Json
+        }
+        Insert: {
+          enabled?: boolean
+          key: string
+          updated_at?: string
+          value?: Json
+        }
+        Update: {
+          enabled?: boolean
+          key?: string
+          updated_at?: string
+          value?: Json
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          email: string | null
+          id: string
+          locale: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id: string
+          locale?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          locale?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      scenario_usage: {
+        Row: {
+          chapter_id: string
+          cooldown_until: string | null
+          created_at: string
+          id: string
+          last_used_at: string
+          level: string
+          scenario_id: string
+          updated_at: string
+          usage_count: number
+          user_id: string
+        }
+        Insert: {
+          chapter_id?: string
+          cooldown_until?: string | null
+          created_at?: string
+          id?: string
+          last_used_at?: string
+          level: string
+          scenario_id: string
+          updated_at?: string
+          usage_count?: number
+          user_id: string
+        }
+        Update: {
+          chapter_id?: string
+          cooldown_until?: string | null
+          created_at?: string
+          id?: string
+          last_used_at?: string
+          level?: string
+          scenario_id?: string
+          updated_at?: string
+          usage_count?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
