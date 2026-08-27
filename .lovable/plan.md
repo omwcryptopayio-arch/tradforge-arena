@@ -1,83 +1,106 @@
-# TradForge Evaluation — V6 : socle industrialisable + Chapitre 1 World-Class
+# TradForge Evaluation — Planification finale (Sprint 1 → 3)
 
-Périmètre strict : **codebase Evaluation uniquement**. Les blocs I / J / K (leçons, widgets, progression globale header/sidebar, préflight, onboarding) sont **exclus** — ils relèvent d'Academy. En cas de doute sur l'appartenance d'un élément, je pose la question avant d'implémenter.
+Périmètre strict : **codebase Evaluation**. Les blocs Academy (leçons, widgets, progression globale, préflight, onboarding) sont exclus ; en cas de doute sur l'appartenance d'un élément, je pose la question avant d'implémenter.
 
-Principe directeur : **additif, jamais destructif**. Rien de ce qui fonctionne (MCQ Standard, Workspace High, Reasoning Premium, backend Cloud + RLS, timer, certificat PDF, journal) n'est réécrit ; tout est étendu par métadonnées, config et injection.
+Principe directeur : **additif, jamais destructif**. Ce qui fonctionne est **gelé** et seulement enrichi.
 
-## État des lieux (scan effectué)
+## FREEZE — périmètre « ne pas casser »
+
+Standard, High, Premium (mécaniques, scoring, raisonnement, cohérence), débrief Rapide/Complète, replay, journal, progression, persistance Cloud, certificat PDF → **gelés fonctionnellement**. Aucune modification de leur logique de scoring. Seules des retouches **visuelles** sont autorisées sur ces écrans.
+
+**Correction majeure actée** : le scoring composite (réponse + raisonnement + collecte + pertinence + efficacité, 60/40 avec plancher processus) concerne **exclusivement le niveau Elite**. Standard/High/Premium conservent leur scoring directionnel actuel.
+
+## État des lieux (scan réel du dépôt)
 
 | Domaine | État |
 |---|---|
-| Standard MCQ / High Workspace / Premium Reasoning | ✅ complet |
-| Backend Cloud (7 tables, RLS, scoring serveur, sessions anonymes) | ✅ complet |
-| Replay continu, débrief Rapide/Complète, timer dégressif, certificat PDF, journal | ✅ complet |
-| Context Cards V2 | 🟡 sparkline + modal analyste OK ; pas d'onglets/filtres/recherche ; 24 cartes ; datasets riches sur 1 seul scénario |
-| Analyse technique | 🟡 2ᵉ délimiteur + break/retest/zone ; pas de module TA structuré |
-| Scoring Premium | 🟡 cohérence Jaccard v1, non intégrée au score |
-| Scénarios | 🟡 30 scriptés, ordre fixe, aucune métadonnée historique, pas de Difficulty/Selection Engine |
-| Difficulty Engine · Selection anti-répétition · chapters/chN/config · i18n | ⬜ absents (documentés seulement) |
+| Standard / High / Premium, replay, débrief, journal, timer, certificat PDF | ✅ complet — FREEZE |
+| Backend Cloud : 7 tables, RLS `auth.uid()`, scoring serveur, `user_roles` + `has_role` | ✅ en place |
+| Authentification | 🟡 sessions **anonymes** uniquement — pas de compte, pas de `profiles` |
+| Identité certificat | 🟡 `candidate_name` saisi à la main, non relié à un profil |
+| Rotation / anti-répétition | ⬜ absente — ordre fixe, même scénario à la même position |
+| i18n | ⬜ absente — tout est en FR en dur |
+| Layout Premium 70/30, zoom/fullscreen | 🟡 layout existant non conforme aux visuels |
+| Niveau Elite, Trial, banque historique (160 cas) | ⬜ à construire (Sprint 2) |
 
-**Conclusion clé** : l'ossature (`ScenarioSpec`, cards par `relevance`, seed déterministe, persistance serveur) est saine et suffisante. Les 3 engines manquants s'ajoutent **sans casser** l'existant → on les fait **dans le Sprint 1**, sans attendre les banques de scénarios.
+Conclusion : la couche backend est solide ; l'auth se **transforme** (anonyme → compte) plutôt qu'elle ne se recrée.
 
-## Décisions structurantes (3 options + recommandation)
+---
 
-**1. Architecture des ~50+ scénarios**
-- A. Un jeu distinct par niveau (actuel) — simple, mais x3 la production de contenu et duplication du contexte historique.
-- B. Scénario unique + Difficulty Engine — un cas historique = une vérité, la difficulté module bruit/aides/temps. Contenu divisé par 3.
-- C. **Hybride (recommandé)** : banque unique de cas historiques (`ScenarioCase`), chaque cas déclarant `difficulty_compatibility: ['standard','high','premium']`. Le Difficulty Engine dérive la vue jouable ; un cas peut rester exclusif à un niveau. → industrialisable, zéro duplication, compatible avec les 150 cas à venir.
+# SPRINT 1 — PUBLIC BETA READY
 
-**2. Macro (Forex) vs Micro (Actions)**
-- A. Deux banques séparées · B. Fusion totale · C. **Banque unique + `asset_class` (recommandé)** : filtrage et quotas par piste au niveau du Selection Engine. Une seule chaîne de production, ouverture obligations/matières premières sans refonte.
+## 1.1 Anti-régression (avant / après)
+Baseline SENTINEL : captures et checklist fonctionnelle des 3 niveaux avant modification, rejouées après chaque lot.
 
-**3. Scoring Premium** — retenu par toi : **hybride**. `composite = 0.60 × direction + 0.40 × processus`, avec **plancher : processus < 50 ⇒ échec du scénario même à 100 % de direction**. Standard/High restent purement directionnels.
+## 1.2 Authentification (P0)
+- Auth email + mot de passe + **confirmation du mot de passe**, **sans vérification par e-mail** (auto-confirm activé côté serveur) → inscription puis connexion immédiate.
+- Écran `/auth` public (SSR), sous-arbre protégé pour les surfaces personnelles ; session persistante, déconnexion, restauration au chargement.
+- **Migration douce** : la session anonyme en cours est convertie en compte réel (`updateUser` email + mot de passe) → la progression déjà accumulée est **conservée**, pas de perte de données. Fallback : création de compte classique.
+- Table `profiles` (display_name, email, locale, created_at/updated_at) + trigger de création à l'inscription, GRANT + RLS `auth.uid()`. `user_roles`/`has_role` existants réutilisés tels quels.
 
-## SPRINT 1 — Socle industrialisable (P0, tout doit être prêt à la fin)
+## 1.3 Identité de certification
+Nom du profil injecté automatiquement dans le certificat (champ pré-rempli, éditable une fois), conditions d'éligibilité et bouton de téléchargement vérifiés de bout en bout : compte → profil → progression → éligibilité → PDF signé au bon nom.
 
-**1.1 Modèle de scénario enrichi** (`types.ts`, additif, tous champs optionnels) : `scenario_type: 'historical_real' | 'synthetic' | 'hybrid'`, `historical_date`, `market_context`, `asset_class` (fx/equity/bond/commodity/crypto), `asset`, `source`, `difficulty_compatibility[]`, `tags[]`, `i18n`. Les 30 scénarios existants sont **rétro-taggés** `historical_real` sans réécriture.
+## 1.4 Internationalisation FR ⇄ EN (P0)
+- Architecture `contenu → langue → UI` (jamais de `if lang === 'en'`), extensible à DE/ES/PT sans refonte : dictionnaire par domaine, `useI18n`, fallback, langue persistée dans `profiles.locale` + localStorage, bascule sans rechargement.
+- Couverture exhaustive : UI/nav/boutons/tooltips/modals/loaders/erreurs/empty states, auth, hub, replay, context cards, débriefs, scoring, certificat, journal, labels techniques du chart, métadonnées de page.
+- **EN culturellement adapté** (registre desk institutionnel), pas de traduction mot à mot. Les 30 scénarios existants sont traduits ; les banques à venir seront ingérées avec champs bilingues natifs.
+- Contrôle automatisé : détection de chaînes FR résiduelles en mode EN.
 
-**1.2 Cohérence historique (garde-fous)** : validateur `scenario-integrity.ts` — cohérence date/contexte/cards, interdiction de mélanger des périodes, supports/résistances ancrés sur prix réels, outcome jamais exposé au client avant décision. Contrôle exécuté au chargement en dev.
+## 1.5 Anti-répétition — dès maintenant, sur les 30 scénarios (P0)
+Trois options : **A** aléatoire simple + exclusion récente (faible valeur) · **B** cooldown mémoire (bon) · **C** **Weighted Rotation Engine (recommandé, retenu)** : cooldown par scénario, `usage_count`, `last_used_at`, poids de diversité (classe d'actifs, famille de contexte, difficulté), seed par utilisateur+tentative.
+- Table `scenario_usage` (user_id, scenario_id, level, used_at, usage_count, cooldown_until) + RLS.
+- Effet immédiat : à chaque nouvelle passe, le scénario 1 **change**, l'ordre change, la couverture pédagogique reste contrôlée. Le moteur est déjà dimensionné pour absorber 160 cas sans modification.
 
-**1.3 Difficulty Engine** (`difficulty.ts`) : `(case, level) → ScenarioSpec jouable` — dosage signal/bruit (nb de distracteurs, seuil de relevance visible), aides (résumés texte en `guided`, données brutes en `analyst`), budget temps, capture du raisonnement on/off.
+## 1.6 Correctifs visuels (sans toucher la logique)
+- **Workspace 70 / 30** : chart 70 % de largeur, rail Context Cards 30 %, conformément aux visuels de référence — et au-delà : densité, hiérarchie typographique, states de survol.
+- **Zoom / Focus** : plein écran chart (ESC pour sortir), plein écran Context Card, transitions premium, responsive.
+- Replay : fluidité des bougies, fenêtre de décision, marqueurs, compteurs pré/post décision.
+- Context Cards : framing, hiérarchie, focus/zoom, graphiques temporels conservés. Industrialisation complète du catalogue → Sprint 2.
 
-**1.4 Selection Engine anti-répétition** (`selection.ts`) : sélection seedée par utilisateur + tentative, **rotation garantie** (le scénario 1 diffère à chaque nouvelle passe), historique des cas vus persistés en base, quotas par `asset_class` et par famille de contexte. Corrige l'effet « toujours le même scénario à la même position » dès ce sprint.
+## 1.7 QA bilingue
+Matrice Auth · Hub · Replay · Context · Certification · Certificat · Mobile · Desktop × FR/EN × fonctionnel/visuel — aucune case vide en clôture.
 
-**1.5 Ingestion-ready** : `chapters/ch1/config.ts` + schéma Zod d'import de la banque ; loader JSON prêt à recevoir les 150 cas documentés sans toucher aux engines.
+**Definition of Done Sprint 1** : compte + connexion opérationnels sans e-mail de confirmation, profil relié au certificat, FR et EN complets sans résidu, rotation anti-répétition active, layout 70/30 + zoom livrés, zéro régression Standard/High/Premium.
 
-**1.6 Backend** : table `certification_case_history` (cas servis par utilisateur/niveau, anti-répétition), colonnes de scoring processus sur `certification_attempts`, GRANT + RLS `auth.uid()`.
+---
 
-## SPRINT 2 — Scoring Premium composite
+# SPRINT 2 — INFRASTRUCTURE SCÉNARIOS + ELITE
 
-`scoring.ts` : Score Réponse (direction), Score Raisonnement (rôles déclarés, profondeur), Score Collecte (couverture des essentiels), Score Pertinence (signal vs bruit consulté), Score Efficacité (ordre, temps, réouvertures, overtime) → composite 60/40 + plancher 50 %. Recalcul **serveur** dans `submitAttempt` (source de vérité). Restitution visuelle par sous-score dans `ResultsView` + feedback qualitatif et détection de biais (rationalisation, sur-exploration, ancrage).
+## 2.1 Audit quantitatif de la banque
+Inventaire réel des 160 cas fournis (Lots 1A→3B) : doublons, cas incomplets, cas exploitables, classe d'actifs, date historique, indicateurs disponibles. Aucune décision d'architecture avant ce chiffre réel.
 
-## SPRINT 3 — Context Cards World-Class
+## 2.2 Modèle de métadonnées (extension additive)
+`scenario_type` (`historical_real` actif ; `synthetic` / `hybrid` préparés mais inactifs), `historical_date`, `market_context`, `asset_class`, `asset`, `market_session`, `source`, `event_date`, `data_snapshot`, `difficulty_compatibility[]`, `tags[]`, `used_at`, `usage_count`, `cooldown`.
 
-Refonte du rail en **desk à onglets** : Tous · Macro · Micro · Technique · Géopolitique · Intermarché · Banques centrales, avec recherche, filtres, compteurs et badges LEAD/COIN/LAG + BEAT/MISS. Catalogue porté à ~60 cartes avec datasets graphiques déterministes généralisés (plus seulement `prm-3`). Modal analyste : multi-timeframe 3M/1M/Daily/Zoom, niveaux annotés, grille de stats, **aucune conclusion écrite** en Premium. Vue « Macro Dashboard » 11 indicateurs (actual vs consensus) en onglet dédié.
+## 2.3 Temporalité et intégrité historique
+Chaque scénario est ancré à un instant précis : indicateurs, supports/résistances et cartes doivent tous provenir de **cette** date. Interdiction stricte de mélanger des périodes ou d'inventer une « valeur plausible ». Validateur `scenario-integrity.ts` bloquant en dev ; outcome jamais exposé au client avant décision.
 
-## SPRINT 4 — Module Analyse Technique
+## 2.4 Stockage — source de vérité unique
+Audit `scenarios` (DB) vs bucket `simulation-scenarios` avant toute création, pour éviter la duplication. Chaîne : Library → Supabase → Selection Engine → Scenario Engine → Difficulty Engine → Évaluation.
 
-Nouvelle famille de cartes TA + panneau dédié : tendance, structure de marché (HH/HL/LH/LL), supports/résistances, figures chartistes, cassures/retests, momentum, volatilité, volumes, multi-timeframe, **score de confluence**. Le chart TradingView-like devient le **zoom décisionnel final**, alimenté par les annotations produites par ce module.
+## 2.5 Architecture de la banque (recommandation)
+Banque **unique** de cas historiques, chaque cas déclarant sa `difficulty_compatibility` ; le Difficulty Engine dérive la vue jouable par niveau. `asset_class` gère macro (Forex) et micro (Actions) dans une seule chaîne, avec quotas au niveau de la sélection — obligations et matières premières s'ouvrent sans refonte.
 
-## SPRINT 5 — i18n FR → EN
+## 2.6 Niveau ELITE (extension, pas 4ᵉ implémentation)
+Standard → High → Premium → **Elite**. Conditions proches du réel : capital et contraintes, contexte complet, informations contradictoires, ratio signal/bruit élevé, macro + micro + technique + géopolitique + sentiment + intermarché, recherche obligatoire.
+**Scoring Elite (et Elite seul)** : `composite = 0,60 × direction + 0,40 × processus` (raisonnement, collecte, pertinence des cartes, efficacité du parcours), **plancher : processus < 50 ⇒ échec**, recalcul serveur, restitution sous-score par sous-score + détection de biais.
 
-Infrastructure `src/lib/i18n` (dictionnaire, `useI18n`, contexte racine, sélecteur, persistance du choix). **FR = source, EN = traduction complète** de l'UI existante et des 30 scénarios/cartes actuels. Les banques à venir sont ingérées avec champs bilingues natifs (fallback FR si EN absent).
+## 2.7 TRIAL (fenêtre promotionnelle, pas un niveau)
+État normal : Standard disponible, High/Premium/Elite verrouillés selon la progression. Trial actif : Elite **exceptionnellement ouvert**, essais illimités, résultats persistés et tentatives tracées. Ouverture/fermeture **pilotées serveur** (flag en base) — aucun hardcode frontend.
 
-## SPRINT 6 — Audit documentaire & pixel-perfect
+## 2.8 Module Analyse Technique & Context Cards industrialisés
+Desk à onglets (Tous · Macro · Micro · Technique · Géopolitique · Intermarché · Banques centrales) avec recherche, filtres, compteurs, badges LEAD/COIN/LAG et BEAT/MISS ; vue Macro Dashboard multi-indicateurs. Module TA : tendance, structure (HH/HL/LH/LL), supports/résistances, figures, cassures/retests, momentum, volatilité, volumes, multi-timeframe, **score de confluence**. Le chart devient le zoom décisionnel final.
 
-Audit des 20 documents : détection des doublons, fusion, hiérarchie unique de référence (`docs/standards` = normatif, `docs/implementation` = état réel), matrice de traçabilité mise à jour. Ajout des standards pixel-perfect : chart, Context Cards, Workspace, dashboards, animations. Mise à jour additive de `CHANGELOG` / `TASKS` / `DECISION_LOG` / `SENTINEL`, plus documentation de la stratégie 3 codebases (Landing / Academy / Evaluation) et du workflow de branches parallèles.
+---
+
+# SPRINT 3 — MOTEUR SYNTHÉTIQUE (reporté, préparé)
+
+Activé seulement après stabilisation de la banque, d'Elite, de la rotation et du data model. Sprint 1-2 ne laissent que des interfaces compatibles : `scenario_type`, briques de description, aucune dépendance IA.
+
+---
 
 ## Section technique
+TanStack Start + Lovable Cloud. Aucune server function protégée appelée depuis un loader public ; routes protégées sous `_authenticated`. Déterminisme `mulberry32` conservé. Persistance write-through (cloud = vérité, cache local). Tokens OKLCH exclusivement. Chaque migration : CREATE → GRANT → RLS → POLICY. Documentation additive (`CHANGELOG`, `TASKS`, `DECISION_LOG`, `SENTINEL`, standards pixel-perfect) mise à jour en fin de chaque sprint.
 
-TanStack Start + Lovable Cloud. Server functions protégées jamais appelées depuis un loader public. Déterminisme `mulberry32` conservé. Persistance write-through (cloud source de vérité + cache local). Tokens OKLCH exclusivement. Chaque migration : CREATE → GRANT → RLS → POLICY.
-
-## Critères d'acceptation
-
-- Typecheck vert, routes 200, aucune régression SENTINEL avant/après.
-- Rotation des scénarios effective (deux passes ⇒ ordre et cas différents).
-- Métadonnées historiques présentes et validées sur les 30 cas existants ; ingestion des 150 cas possible sans modification d'engine.
-- Score Premium composite affiché sous-score par sous-score, plancher processus actif.
-- Context Cards à onglets + recherche, ~60 cartes graphiques, zéro conclusion écrite en Premium.
-- Module TA opérationnel avec score de confluence.
-- EN complet, bascule FR/EN sans rechargement.
-- Documentation dédoublonnée, référence unique.
-
-Exécution continue des sprints 1 → 6 sans confirmation intermédiaire, arrêt uniquement sur blocage réel.
+Exécution continue Sprint 1 → 2 → 3 sans confirmation intermédiaire, arrêt uniquement sur blocage réel.
