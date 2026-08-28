@@ -227,6 +227,6 @@ export const fr = {
     dangerZone: "Zone sensible",
     resetProgress: "Réinitialiser ma progression",
   },
-} as const;
+};
 
 export type Dictionary = typeof fr;
