@@ -4,6 +4,8 @@ import { motion } from "motion/react";
 import { ArrowRight, BookOpen, Lock, CheckCircle2 } from "lucide-react";
 import { Stars } from "@/components/certification/Stars";
 import { CertificatePanel } from "@/components/certification/CertificatePanel";
+import { LanguageSwitcher } from "@/components/certification/LanguageSwitcher";
+import { AccountMenu } from "@/components/certification/AccountMenu";
 import { LEVEL_META, type Level } from "@/lib/certification/types";
 import { getScenarios } from "@/lib/certification/scenarios";
 import { levelSummary, type LevelSummary } from "@/lib/certification/storage";
@@ -38,6 +40,10 @@ function Hub() {
   return (
     <div className="tf-grid-bg min-h-screen bg-background text-foreground">
       <div className="mx-auto max-w-6xl px-5 py-12 sm:py-16">
+        <div className="mb-8 flex items-center justify-end gap-3">
+          <LanguageSwitcher />
+          <AccountMenu />
+        </div>
         {/* Hero */}
         <div className="mb-12">
           <div className="label-mono mb-3 flex items-center gap-2 text-primary">
