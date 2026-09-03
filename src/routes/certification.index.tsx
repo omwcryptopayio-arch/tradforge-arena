@@ -38,6 +38,10 @@ function Hub() {
   return (
     <div className="tf-grid-bg min-h-screen bg-background text-foreground">
       <div className="mx-auto max-w-6xl px-5 py-12 sm:py-16">
+        <div className="mb-8 flex items-center justify-end gap-3">
+          <LanguageSwitcher />
+          <AccountMenu />
+        </div>
         {/* Hero */}
         <div className="mb-12">
           <div className="label-mono mb-3 flex items-center gap-2 text-primary">
