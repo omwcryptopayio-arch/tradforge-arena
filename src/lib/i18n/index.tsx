@@ -18,17 +18,14 @@ import { fr } from "./fr";
 import { en } from "./en";
 import { CARD_TEXT, type CardText } from "./content.cards";
 import { SCENARIO_TEXT, type ScenarioText } from "./content.scenarios";
-import {
-  DEFAULT_LOCALE_FALLBACK,
-  LOCALE_STORAGE_KEY,
-  isLocale,
-  type Locale,
-} from "./locale-internals";
+import { DEFAULT_LOCALE, LOCALE_STORAGE_KEY, isLocale, type Locale } from "./locale";
 
 export type { Locale } from "./locale";
-export { LOCALES, LOCALE_LABEL } from "./locale";
+export { LOCALES, LOCALE_LABEL, DEFAULT_LOCALE } from "./locale";
 
-const DICTS = { fr, en } as const;
+const DEFAULT_LOCALE_FALLBACK: Locale = DEFAULT_LOCALE;
+
+const DICTS: Record<Locale, typeof fr> = { fr, en };
 
 function resolve(dict: unknown, path: string): string | undefined {
   const parts = path.split(".");
