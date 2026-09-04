@@ -152,6 +152,53 @@ export const recordCardInteractions = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+/** Weighted Rotation Engine — record that a scenario was served to the user. */
+export const recordScenarioUsage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z.object({ level: z.string(), scenarioId: z.string() }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const { data: existing } = await supabase
+      .from("scenario_usage")
+      .select("id, usage_count")
+      .eq("user_id", userId)
+      .eq("scenario_id", data.scenarioId)
+      .eq("level", data.level)
+      .maybeSingle();
+
+    if (existing) {
+      await supabase
+        .from("scenario_usage")
+        .update({
+          usage_count: existing.usage_count + 1,
+          last_used_at: new Date().toISOString(),
+        })
+        .eq("id", existing.id);
+    } else {
+      await supabase.from("scenario_usage").insert({
+        user_id: userId,
+        level: data.level,
+        scenario_id: data.scenarioId,
+        usage_count: 1,
+      });
+    }
+    return { ok: true };
+  });
+
+/** Usage rows for the signed-in learner (hydrates the local rotation cache). */
+export const getScenarioUsage = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data } = await context.supabase
+      .from("scenario_usage")
+      .select("scenario_id, usage_count, level")
+      .eq("user_id", context.userId);
+    return data ?? [];
+  });
+
+
 /** Persist declared reasoning + a full decision-journal entry. */
 export const saveJournalEntry = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])

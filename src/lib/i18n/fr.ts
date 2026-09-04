@@ -214,6 +214,19 @@ export const fr = {
     generic: "Une erreur est survenue. Réessaie.",
     signedInAs: "Connecté en tant que",
     noEmailVerification: "Aucune vérification par e-mail : ton compte est actif immédiatement.",
+    eyebrowSignUp: "ACCÈS ARENA · CRÉATION DE COMPTE",
+    eyebrowSignIn: "ACCÈS ARENA · CONNEXION",
+    displayNameHint: "C'est ce nom qui figurera sur ton certificat officiel.",
+    invalidEmail: "Adresse e-mail invalide.",
+    invalidName: "Le nom affiché doit contenir entre 2 et 80 caractères.",
+    createdTitle: "Compte créé avec succès.",
+    createdBody: "Ton compte {email} est actif. Aucune vérification par e-mail n'est requise.",
+    createdNext: "Étape suivante : connecte-toi ci-dessous avec ton e-mail et ton mot de passe.",
+    gateTitle: "L'accès à l'Arena requiert un compte",
+    gateLede:
+      "Ta progression, ton Decision Journal et ton certificat institutionnel sont rattachés à ton compte. Crée-le en trente secondes.",
+    requiredNotice: "Authentification obligatoire pour accéder aux niveaux Standard, High et Premium.",
+
   },
   account: {
     metaTitle: "Mon compte · TradForge Institut",

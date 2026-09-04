@@ -1,5 +1,6 @@
 import { Timer, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useI18n } from "@/lib/i18n";
 import { formatClock, type DecisionTimerState } from "@/hooks/useDecisionTimer";
 
 /**
@@ -7,6 +8,7 @@ import { formatClock, type DecisionTimerState } from "@/hooks/useDecisionTimer";
  * budget is exceeded — pressure without blocking the decision.
  */
 export function DecisionTimer({ state }: { state: DecisionTimerState }) {
+  const { t } = useI18n();
   const { remainingMs, overtime } = state;
   const near = !overtime && remainingMs <= 20_000;
   return (
@@ -25,7 +27,7 @@ export function DecisionTimer({ state }: { state: DecisionTimerState }) {
       {overtime ? <AlertTriangle className="h-3.5 w-3.5" /> : <Timer className="h-3.5 w-3.5" />}
       <span className="font-semibold tabular-nums">{formatClock(remainingMs)}</span>
       {overtime && (
-        <span className="label-mono text-[9px] uppercase tracking-wide">Dépassement</span>
+        <span className="label-mono text-[9px] uppercase tracking-wide">{t("timer.overtime")}</span>
       )}
     </div>
   );

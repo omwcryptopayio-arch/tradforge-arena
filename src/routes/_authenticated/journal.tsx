@@ -8,7 +8,7 @@ import { getCard } from "@/lib/certification/cards";
 import { REASONING_ROLES } from "@/lib/certification/engine";
 import { getJournal, resetAll, type JournalEntry } from "@/lib/certification/storage";
 
-export const Route = createFileRoute("/journal")({
+export const Route = createFileRoute("/_authenticated/journal")({
   head: () => ({
     meta: [{ title: "Decision Journal · TradForge" }],
   }),

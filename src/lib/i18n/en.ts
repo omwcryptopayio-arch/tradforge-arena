@@ -214,6 +214,19 @@ export const en: Dictionary = {
     generic: "Something went wrong. Try again.",
     signedInAs: "Signed in as",
     noEmailVerification: "No email verification: your account is active immediately.",
+    eyebrowSignUp: "ARENA ACCESS · CREATE ACCOUNT",
+    eyebrowSignIn: "ARENA ACCESS · SIGN IN",
+    displayNameHint: "This is the name printed on your official certificate.",
+    invalidEmail: "Invalid email address.",
+    invalidName: "Display name must be between 2 and 80 characters.",
+    createdTitle: "Account created successfully.",
+    createdBody: "Your account {email} is active. No email verification is required.",
+    createdNext: "Next step: sign in below with your email and password.",
+    gateTitle: "Arena access requires an account",
+    gateLede:
+      "Your progress, Decision Journal and institutional certificate are tied to your account. Create it in thirty seconds.",
+    requiredNotice: "Authentication is required to access the Standard, High and Premium levels.",
+
   },
   account: {
     metaTitle: "My account · TradForge Institute",

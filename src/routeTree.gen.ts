@@ -9,20 +9,20 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as JournalRouteImport } from './routes/journal'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as CertificationIndexRouteImport } from './routes/certification.index'
-import { Route as CertificationLevelNRouteImport } from './routes/certification.$level.$n'
+import { Route as AuthenticatedJournalRouteImport } from './routes/_authenticated/journal'
+import { Route as AuthenticatedCertificationIndexRouteImport } from './routes/_authenticated/certification.index'
+import { Route as AuthenticatedCertificationLevelNRouteImport } from './routes/_authenticated/certification.$level.$n'
 
-const JournalRoute = JournalRouteImport.update({
-  id: '/journal',
-  path: '/journal',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -30,38 +30,46 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CertificationIndexRoute = CertificationIndexRouteImport.update({
-  id: '/certification/',
-  path: '/certification/',
-  getParentRoute: () => rootRouteImport,
+const AuthenticatedJournalRoute = AuthenticatedJournalRouteImport.update({
+  id: '/journal',
+  path: '/journal',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const CertificationLevelNRoute = CertificationLevelNRouteImport.update({
-  id: '/certification/$level/$n',
-  path: '/certification/$level/$n',
-  getParentRoute: () => rootRouteImport,
-} as any)
+const AuthenticatedCertificationIndexRoute =
+  AuthenticatedCertificationIndexRouteImport.update({
+    id: '/certification/',
+    path: '/certification/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedCertificationLevelNRoute =
+  AuthenticatedCertificationLevelNRouteImport.update({
+    id: '/certification/$level/$n',
+    path: '/certification/$level/$n',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/journal': typeof JournalRoute
-  '/certification/': typeof CertificationIndexRoute
-  '/certification/$level/$n': typeof CertificationLevelNRoute
+  '/journal': typeof AuthenticatedJournalRoute
+  '/certification/': typeof AuthenticatedCertificationIndexRoute
+  '/certification/$level/$n': typeof AuthenticatedCertificationLevelNRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/journal': typeof JournalRoute
-  '/certification': typeof CertificationIndexRoute
-  '/certification/$level/$n': typeof CertificationLevelNRoute
+  '/journal': typeof AuthenticatedJournalRoute
+  '/certification': typeof AuthenticatedCertificationIndexRoute
+  '/certification/$level/$n': typeof AuthenticatedCertificationLevelNRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
-  '/journal': typeof JournalRoute
-  '/certification/': typeof CertificationIndexRoute
-  '/certification/$level/$n': typeof CertificationLevelNRoute
+  '/_authenticated/journal': typeof AuthenticatedJournalRoute
+  '/_authenticated/certification/': typeof AuthenticatedCertificationIndexRoute
+  '/_authenticated/certification/$level/$n': typeof AuthenticatedCertificationLevelNRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -76,34 +84,33 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/auth'
-    | '/journal'
-    | '/certification/'
-    | '/certification/$level/$n'
+    | '/_authenticated/journal'
+    | '/_authenticated/certification/'
+    | '/_authenticated/certification/$level/$n'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
-  JournalRoute: typeof JournalRoute
-  CertificationIndexRoute: typeof CertificationIndexRoute
-  CertificationLevelNRoute: typeof CertificationLevelNRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/journal': {
-      id: '/journal'
-      path: '/journal'
-      fullPath: '/journal'
-      preLoaderRoute: typeof JournalRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/auth': {
       id: '/auth'
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -113,29 +120,49 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/certification/': {
-      id: '/certification/'
+    '/_authenticated/journal': {
+      id: '/_authenticated/journal'
+      path: '/journal'
+      fullPath: '/journal'
+      preLoaderRoute: typeof AuthenticatedJournalRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/certification/': {
+      id: '/_authenticated/certification/'
       path: '/certification'
       fullPath: '/certification/'
-      preLoaderRoute: typeof CertificationIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedCertificationIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/certification/$level/$n': {
-      id: '/certification/$level/$n'
+    '/_authenticated/certification/$level/$n': {
+      id: '/_authenticated/certification/$level/$n'
       path: '/certification/$level/$n'
       fullPath: '/certification/$level/$n'
-      preLoaderRoute: typeof CertificationLevelNRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedCertificationLevelNRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedJournalRoute: typeof AuthenticatedJournalRoute
+  AuthenticatedCertificationIndexRoute: typeof AuthenticatedCertificationIndexRoute
+  AuthenticatedCertificationLevelNRoute: typeof AuthenticatedCertificationLevelNRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedJournalRoute: AuthenticatedJournalRoute,
+  AuthenticatedCertificationIndexRoute: AuthenticatedCertificationIndexRoute,
+  AuthenticatedCertificationLevelNRoute: AuthenticatedCertificationLevelNRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
-  JournalRoute: JournalRoute,
-  CertificationIndexRoute: CertificationIndexRoute,
-  CertificationLevelNRoute: CertificationLevelNRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,17 +1,19 @@
 import { BarChart3, Scale, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useI18n } from "@/lib/i18n";
 
 export type Phase = "research" | "decision" | "reasoning" | "results";
 
-const STEPS: { key: Phase; label: string; icon: typeof BarChart3 }[] = [
-  { key: "research", label: "Research", icon: BarChart3 },
-  { key: "decision", label: "Decision", icon: Scale },
-  { key: "results", label: "Results", icon: CheckCircle2 },
+const STEPS: { key: Phase; tKey: string; icon: typeof BarChart3 }[] = [
+  { key: "research", tKey: "stepper.research", icon: BarChart3 },
+  { key: "decision", tKey: "stepper.decision", icon: Scale },
+  { key: "results", tKey: "stepper.results", icon: CheckCircle2 },
 ];
 
 const ORDER: Phase[] = ["research", "decision", "reasoning", "results"];
 
 export function Stepper({ current }: { current: Phase }) {
+  const { t } = useI18n();
   const currentIdx = ORDER.indexOf(current);
   return (
     <div className="flex items-center gap-2">
@@ -34,7 +36,7 @@ export function Stepper({ current }: { current: Phase }) {
               )}
             >
               <Icon className="h-3.5 w-3.5" />
-              {step.label}
+              {t(step.tKey)}
             </div>
             {i < STEPS.length - 1 && <span className="text-muted-foreground">→</span>}
           </div>
