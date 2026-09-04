@@ -1,30 +1,37 @@
-import { Globe } from "lucide-react";
-import { LOCALES, useI18n, type Locale } from "@/lib/i18n";
+import { useI18n, type Locale } from "@/lib/i18n";
 
-/** FR ⇄ EN toggle. Switches without a page reload; persists the preference. */
-export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
+const FLAG: Record<Locale, { emoji: string; label: string }> = {
+  fr: { emoji: "🇫🇷", label: "Français" },
+  en: { emoji: "🇬🇧", label: "English" },
+};
+
+const ORDER: Locale[] = ["fr", "en"];
+
+/** Flag-based FR ⇄ EN switch. Switches the whole UI without a reload. */
+export function LanguageSwitcher() {
   const { locale, setLocale } = useI18n();
 
   return (
     <div
-      className="inline-flex items-center gap-1 rounded-lg border border-border bg-surface-raised p-0.5"
+      className="inline-flex shrink-0 items-center gap-0.5 rounded-full border border-border bg-surface-raised p-0.5"
       role="group"
-      aria-label="Language"
+      aria-label="Language / Langue"
     >
-      {!compact && <Globe className="ml-1.5 h-3.5 w-3.5 text-muted-foreground" aria-hidden />}
-      {LOCALES.map((code: Locale) => (
+      {ORDER.map((code) => (
         <button
           key={code}
           type="button"
           onClick={() => setLocale(code)}
           aria-pressed={locale === code}
-          className={`rounded-md px-2 py-1 text-[11px] font-semibold uppercase tracking-wider transition-colors ${
+          aria-label={FLAG[code].label}
+          title={FLAG[code].label}
+          className={`grid h-7 w-8 place-items-center rounded-full text-base leading-none transition-all ${
             locale === code
-              ? "bg-primary text-primary-foreground"
-              : "text-muted-foreground hover:text-foreground"
+              ? "bg-primary/15 ring-1 ring-primary/50"
+              : "opacity-45 hover:opacity-90"
           }`}
         >
-          {code}
+          <span aria-hidden>{FLAG[code].emoji}</span>
         </button>
       ))}
     </div>
