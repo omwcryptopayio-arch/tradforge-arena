@@ -6,7 +6,7 @@ import { WorkspaceRun } from "@/components/certification/WorkspaceRun";
 import { LEVEL_META, type Level } from "@/lib/certification/types";
 import { getScenario, getScenarios } from "@/lib/certification/scenarios";
 
-export const Route = createFileRoute("/certification/$level/$n")({
+export const Route = createFileRoute("/_authenticated/certification/$level/$n")({
   component: Runner,
 });
 

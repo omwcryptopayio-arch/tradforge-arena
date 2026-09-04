@@ -10,7 +10,7 @@ import { LEVEL_META, type Level } from "@/lib/certification/types";
 import { getScenarios } from "@/lib/certification/scenarios";
 import { levelSummary, type LevelSummary } from "@/lib/certification/storage";
 
-export const Route = createFileRoute("/certification/")({
+export const Route = createFileRoute("/_authenticated/certification/")({
   head: () => ({
     meta: [
       { title: "Certification finale · TradForge" },
