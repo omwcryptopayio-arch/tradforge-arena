@@ -154,6 +154,12 @@ export const en: Dictionary = {
     macroImpact: "Impact chain",
     yourAnswer: "Your answer",
     bestAnswer: "Best answer",
+    yourBias: "Your call",
+    expected: "expected",
+    optionCorrectFallback: "Most coherent answer given the macro context presented.",
+    optionWrongFallback: "Inconsistent with the dominant catalyst in this scenario.",
+    quickTakeFallback: "Dominant institutional stance: {dir} bias on {symbol}.",
+    scoreEngine: "Score Engine · Decision",
   },
   timer: {
     overtime: "Overtime",

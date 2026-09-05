@@ -153,6 +153,12 @@ export const fr = {
     macroImpact: "Chaîne d'impact",
     yourAnswer: "Ta réponse",
     bestAnswer: "Meilleure réponse",
+    yourBias: "Ton biais",
+    expected: "attendu",
+    optionCorrectFallback: "Réponse la plus cohérente avec le contexte macro présenté.",
+    optionWrongFallback: "Incohérente avec le catalyseur dominant de ce scénario.",
+    quickTakeFallback: "Position institutionnelle dominante : biais {dir} sur {symbol}.",
+    scoreEngine: "Score Engine · Décision",
   },
   timer: {
     overtime: "Dépassement",
