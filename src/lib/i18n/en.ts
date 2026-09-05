@@ -58,6 +58,32 @@ export const en: Dictionary = {
     metaTitle: "Final certification · TradForge",
     metaDescription: "Four-level final certification: Standard, High, Premium, Elite.",
   },
+  levels: {
+    standard: {
+      name: "Standard",
+      tagline: "MCQ · Scripted replay",
+      blurb:
+        "Read the context, let the replay run to the decision zone, then pick the most coherent bias.",
+    },
+    high: {
+      name: "High",
+      tagline: "Macro Desk · Context Cards",
+      blurb:
+        "Explore the Context Cards freely, separate signal from noise, then commit to a directional call.",
+    },
+    premium: {
+      name: "Premium",
+      tagline: "Reasoning · Coherence Index",
+      blurb:
+        "No hints. Decide first, then justify your reasoning card by card. Your coherence is measured.",
+    },
+    elite: {
+      name: "Elite",
+      tagline: "Live conditions · Composite score",
+      blurb:
+        "Real desk conditions: constrained time, no assistance, composite decision + process score.",
+    },
+  },
   stepper: {
     research: "Research",
     decision: "Decision",

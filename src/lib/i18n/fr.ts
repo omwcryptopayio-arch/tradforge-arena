@@ -57,6 +57,32 @@ export const fr = {
     metaTitle: "Certification finale · TradForge",
     metaDescription: "Certification finale en 4 niveaux : Standard, High, Premium, Elite.",
   },
+  levels: {
+    standard: {
+      name: "Standard",
+      tagline: "QCM · Replay scénarisé",
+      blurb:
+        "Lis le contexte, laisse le replay se dérouler jusqu'à la zone de décision, puis choisis le biais le plus cohérent.",
+    },
+    high: {
+      name: "High",
+      tagline: "Macro Desk · Context Cards",
+      blurb:
+        "Explore librement les Context Cards, distingue le signal du bruit, puis engage ta décision directionnelle.",
+    },
+    premium: {
+      name: "Premium",
+      tagline: "Raisonnement · Indice de Cohérence",
+      blurb:
+        "Aucune indication. Décide, puis justifie ton raisonnement carte par carte. Ta cohérence est mesurée.",
+    },
+    elite: {
+      name: "Elite",
+      tagline: "Conditions réelles · Score composite",
+      blurb:
+        "Conditions de desk réelles : temps contraint, aucune aide, score composite décision + processus.",
+    },
+  },
   stepper: {
     research: "Recherche",
     decision: "Décision",
