@@ -27,6 +27,7 @@ import {
   uid,
   type ReasoningItem,
 } from "@/lib/certification/storage";
+import { useI18n } from "@/lib/i18n";
 
 interface WorkspaceRunProps {
   scenario: ScenarioSpec;
@@ -47,6 +48,7 @@ interface Declaration {
 }
 
 export function WorkspaceRun({ scenario, isLast, onNext }: WorkspaceRunProps) {
+  const { t } = useI18n();
   const isPremium = scenario.level === "premium";
   const startedAt = useMemo(() => Date.now(), [scenario.id]);
 
@@ -171,9 +173,9 @@ export function WorkspaceRun({ scenario, isLast, onNext }: WorkspaceRunProps) {
       reasoning,
       bias:
         declaredNotOpened > 0
-          ? "Rationalisation : justification de cartes non consultées"
+          ? "bias.rationalisation"
           : efficiency < 50
-            ? "Sur-exploration : trop de bruit consulté"
+            ? "bias.overResearch"
             : null,
     });
     setPhase("results");
@@ -187,14 +189,36 @@ export function WorkspaceRun({ scenario, isLast, onNext }: WorkspaceRunProps) {
     const declaredNotOpened = declaredIds.filter((id) => !viewedSet.has(id)).length;
     const metrics = isPremium
       ? [
-          { label: "Research Efficiency", value: efficiency, suffix: "%", hint: `${essentialFound}/${essentials.length} essentiels` },
-          { label: "Indice de Cohérence", value: coherence, suffix: "%", hint: "n'affecte pas le score" },
-          { label: "Cartes consultées", value: openOrder.length, hint: `sur ${cards.length}` },
+          {
+            label: t("metrics.efficiency"),
+            value: efficiency,
+            suffix: "%",
+            hint: `${essentialFound}/${essentials.length} ${t("cards.essentials")}`,
+          },
+          {
+            label: t("metrics.coherence"),
+            value: coherence,
+            suffix: "%",
+            hint: t("metrics.noScoreImpact"),
+          },
+          {
+            label: t("metrics.cardsOpened"),
+            value: openOrder.length,
+            hint: `${t("common.of")} ${cards.length}`,
+          },
         ]
       : [
-          { label: "Research Efficiency", value: efficiency, suffix: "%" },
-          { label: "Essentiels trouvés", value: essentialFound, hint: `sur ${essentials.length}` },
-          { label: "Cartes consultées", value: openOrder.length, hint: `sur ${cards.length}` },
+          { label: t("metrics.efficiency"), value: efficiency, suffix: "%" },
+          {
+            label: t("metrics.essentialsFound"),
+            value: essentialFound,
+            hint: `${t("common.of")} ${essentials.length}`,
+          },
+          {
+            label: t("metrics.cardsOpened"),
+            value: openOrder.length,
+            hint: `${t("common.of")} ${cards.length}`,
+          },
         ];
     return (
       <ResultsView
@@ -217,11 +241,10 @@ export function WorkspaceRun({ scenario, isLast, onNext }: WorkspaceRunProps) {
         <Stepper current="reasoning" />
         <div className="rounded-xl border border-primary/25 bg-primary/5 p-5">
           <div className="mb-1 flex items-center gap-2 font-display text-lg font-semibold">
-            <Brain className="h-5 w-5 text-primary" /> Capture Your Reasoning
+            <Brain className="h-5 w-5 text-primary" /> {t("reasoning.title")}
           </div>
           <p className="text-sm text-muted-foreground">
-            Pour chaque carte qui a influencé ta décision, indique son rôle et pourquoi. Ta cohérence
-            est mesurée par rapport à ta recherche réelle — elle ne pénalise pas ton score.
+            {t("reasoning.lede")}
           </p>
         </div>
 
@@ -255,7 +278,7 @@ export function WorkspaceRun({ scenario, isLast, onNext }: WorkspaceRunProps) {
                       <span className="text-sm text-muted-foreground">{c.template.title}</span>
                       {wasViewed && (
                         <span className="flex items-center gap-1 text-[10px] text-bull">
-                          <Eye className="h-3 w-3" /> consultée
+                          <Eye className="h-3 w-3" /> {t("reasoning.consulted")}
                         </span>
                       )}
                     </div>
@@ -288,9 +311,9 @@ export function WorkspaceRun({ scenario, isLast, onNext }: WorkspaceRunProps) {
                                   ? "border-primary/60 bg-primary/15 text-primary"
                                   : "border-border text-muted-foreground hover:bg-accent",
                               )}
-                              title={r.hint}
+                              title={t(`reasoning.roleHints.${r.value}`)}
                             >
-                              {r.label}
+                              {t(`reasoning.roles.${r.value}`)}
                             </button>
                           ))}
                         </div>
@@ -302,7 +325,7 @@ export function WorkspaceRun({ scenario, isLast, onNext }: WorkspaceRunProps) {
                               [c.template.id]: { ...p[c.template.id], why: e.target.value },
                             }))
                           }
-                          placeholder="Pourquoi cette carte a compté…"
+                          placeholder={t("reasoning.whyPlaceholder")}
                           rows={2}
                           className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm outline-none focus:border-primary/50"
                         />
@@ -318,7 +341,7 @@ export function WorkspaceRun({ scenario, isLast, onNext }: WorkspaceRunProps) {
                             }
                             className="h-3.5 w-3.5 accent-[var(--gold)]"
                           />
-                          A changé mon avis
+                          {t("reasoning.changedView")}
                         </label>
                       </div>
                     </motion.div>
@@ -334,7 +357,7 @@ export function WorkspaceRun({ scenario, isLast, onNext }: WorkspaceRunProps) {
           onClick={submitReasoning}
           className="flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-br from-[var(--gold)] to-primary px-4 py-3.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-gold)] transition-transform hover:scale-[1.01] active:scale-[0.99]"
         >
-          Analyser ma cohérence <ArrowRight className="h-4 w-4" />
+          {t("reasoning.submit")} <ArrowRight className="h-4 w-4" />
         </button>
       </div>
     );
@@ -357,7 +380,7 @@ export function WorkspaceRun({ scenario, isLast, onNext }: WorkspaceRunProps) {
           onClick={() => setPhase("research")}
           className="text-sm text-muted-foreground underline-offset-4 hover:underline"
         >
-          ← Retourner à la recherche
+          {t("decision.backToResearch")}
         </button>
       </div>
     );
@@ -385,14 +408,17 @@ export function WorkspaceRun({ scenario, isLast, onNext }: WorkspaceRunProps) {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div className="label-mono flex items-center gap-1.5 text-primary">
-              <Layers className="h-3.5 w-3.5" /> Context Cards
+              <Layers className="h-3.5 w-3.5" /> {t("cards.title")}
             </div>
             <div className="font-mono text-xs text-muted-foreground">
               {isPremium ? (
-                <>{openOrder.length} consultées</>
+                <>
+                  {openOrder.length} {t("cards.viewed")}
+                </>
               ) : (
                 <>
-                  {openOrder.length} vues · {essentialFound}/{essentials.length} essentiels
+                  {openOrder.length} {t("cards.viewed")} · {essentialFound}/{essentials.length}{" "}
+                  {t("cards.essentials")}
                 </>
               )}
             </div>
@@ -417,7 +443,7 @@ export function WorkspaceRun({ scenario, isLast, onNext }: WorkspaceRunProps) {
         onClick={() => setPhase("decision")}
         className="flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-br from-[var(--gold)] to-primary px-4 py-3.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-gold)] transition-transform enabled:hover:scale-[1.01] enabled:active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40"
       >
-        Passer à la décision <ArrowRight className="h-4 w-4" />
+        {t("decision.toDecision")} <ArrowRight className="h-4 w-4" />
       </button>
 
       <ContextCardModal
