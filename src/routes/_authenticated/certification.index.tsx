@@ -4,17 +4,27 @@ import { motion } from "motion/react";
 import { ArrowRight, BookOpen, Lock, CheckCircle2 } from "lucide-react";
 import { Stars } from "@/components/certification/Stars";
 import { CertificatePanel } from "@/components/certification/CertificatePanel";
-import { LanguageSwitcher } from "@/components/certification/LanguageSwitcher";
-import { AccountMenu } from "@/components/certification/AccountMenu";
+import { TopBar } from "@/components/certification/TopBar";
 import { LEVEL_META, type Level } from "@/lib/certification/types";
 import { getScenarios } from "@/lib/certification/scenarios";
 import { levelSummary, type LevelSummary } from "@/lib/certification/storage";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/certification/")({
   head: () => ({
     meta: [
-      { title: "Certification finale · TradForge" },
-      { name: "description", content: "Certification finale en 3 niveaux : Standard, High, Premium." },
+      { title: "Final certification · TradeForge Arena" },
+      {
+        name: "description",
+        content: "Four-level final certification: Standard, High, Premium, Elite.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { property: "og:title", content: "Final certification · TradeForge Arena" },
+      {
+        property: "og:description",
+        content: "Move from scripted replay to measured institutional reasoning.",
+      },
     ],
   }),
   component: Hub,
@@ -23,6 +33,7 @@ export const Route = createFileRoute("/_authenticated/certification/")({
 const LEVELS: Level[] = ["standard", "high", "premium"];
 
 function Hub() {
+  const { t } = useI18n();
   const [summaries, setSummaries] = useState<Record<Level, LevelSummary>>();
 
   useEffect(() => {
@@ -39,32 +50,24 @@ function Hub() {
 
   return (
     <div className="tf-grid-bg min-h-screen bg-background text-foreground">
-      <div className="mx-auto max-w-6xl px-5 py-12 sm:py-16">
-        <div className="mb-8 flex items-center justify-end gap-3">
-          <LanguageSwitcher />
-          <AccountMenu />
-        </div>
+      <TopBar journalLink />
+      <div className="mx-auto max-w-6xl px-5 py-10 sm:py-14">
         {/* Hero */}
-        <div className="mb-12">
+        <div className="mb-10">
           <div className="label-mono mb-3 flex items-center gap-2 text-primary">
-            <span className="text-[var(--gold)]">✦</span> CHAPITRE 01 · CERTIFICATION FINALE
+            <span className="text-[var(--gold)]">✦</span> {t("hub.eyebrow")}
           </div>
           <h1 className="font-display text-4xl font-bold tracking-tight sm:text-6xl">
-            Certification <span className="text-gradient-gold">Finale</span>
+            {t("hub.title")} <span className="text-gradient-gold">{t("hub.titleAccent")}</span>
           </h1>
-          <p className="label-mono mt-3 text-primary/80">
-            VOIR · MANIPULER · DÉCIDER · COMPRENDRE
-          </p>
-          <p className="mt-4 max-w-2xl text-muted-foreground">
-            Trois niveaux, trois mécaniques. Progresse du replay scénarisé au raisonnement
-            institutionnel mesuré. Chaque niveau : 10 scénarios de marché réels.
-          </p>
+          <p className="label-mono mt-3 text-primary/80">{t("landing.tagline")}</p>
+          <p className="mt-4 max-w-2xl text-muted-foreground">{t("hub.lede")}</p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
               to="/journal"
               className="inline-flex items-center gap-2 rounded-lg border border-border bg-surface-raised px-4 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
             >
-              <BookOpen className="h-4 w-4" /> Decision Journal
+              <BookOpen className="h-4 w-4" /> {t("common.journal")}
             </Link>
           </div>
         </div>
@@ -98,15 +101,19 @@ function Hub() {
                       <CheckCircle2 className="h-5 w-5 text-bull" />
                     ) : null}
                   </div>
-                  <h2 className="font-display text-2xl font-bold">{meta.name}</h2>
-                  <div className="label-mono mt-1 text-primary/80">{meta.tagline}</div>
+                  <h2 className="font-display text-2xl font-bold">
+                    {t(`levels.${level}.name`)}
+                  </h2>
+                  <div className="label-mono mt-1 text-primary/80">
+                    {t(`levels.${level}.tagline`)}
+                  </div>
                   <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground">
-                    {meta.blurb}
+                    {t(`levels.${level}.blurb`)}
                   </p>
 
                   <div className="mt-5 space-y-2">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-muted-foreground">Progression</span>
+                      <span className="text-muted-foreground">{t("common.progression")}</span>
                       <span className="font-mono tabular-nums">
                         {summary?.completed ?? 0}/{total}
                       </span>
@@ -119,7 +126,7 @@ function Hub() {
                     </div>
                     {summary && summary.completed > 0 && (
                       <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <span>Score agrégé</span>
+                        <span>{t("hub.aggregate")}</span>
                         <span className="font-mono tabular-nums text-primary">
                           {summary.aggregatePct}%
                         </span>
@@ -128,13 +135,23 @@ function Hub() {
                   </div>
 
                   <div className="mt-5 flex items-center gap-1.5 text-sm font-semibold text-primary">
-                    {summary && summary.completed > 0 ? "Continuer" : "Démarrer"}
+                    {summary && summary.completed > 0 ? t("common.continue") : t("common.start")}
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </div>
                 </Link>
               </motion.div>
             );
           })}
+        </div>
+
+        {/* Rules */}
+        <div className="mt-10 rounded-2xl border border-border bg-surface/60 p-6">
+          <div className="label-mono mb-3 text-primary">{t("hub.ruleTitle")}</div>
+          <ul className="space-y-1.5 text-sm text-muted-foreground">
+            <li>› {t("hub.rule1")}</li>
+            <li>› {t("hub.rule2")}</li>
+            <li>› {t("hub.rule3")}</li>
+          </ul>
         </div>
 
         <CertificatePanel />

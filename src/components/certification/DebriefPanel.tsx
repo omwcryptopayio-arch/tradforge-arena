@@ -13,8 +13,9 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AnimatedNumber } from "./AnimatedNumber";
+import { useI18n } from "@/lib/i18n";
+import { useDirectionLabel } from "@/lib/i18n/scenario";
 import {
-  DIRECTION_LABELS,
   type Direction,
   type McqOption,
   type ScenarioSpec,
@@ -45,11 +46,7 @@ interface DebriefPanelProps {
 
 type Density = "rapide" | "complete";
 
-function fallbackQuickTake(s: ScenarioSpec): string {
-  if (s.quickTake) return s.quickTake;
-  const dir = DIRECTION_LABELS[s.correctDirection].toLowerCase();
-  return `Position institutionnelle dominante : biais ${dir} sur ${s.symbol}.`;
-}
+
 
 /**
  * Restructured, progressive debrief. Same TradForge content, hierarchised for
@@ -66,7 +63,15 @@ export function DebriefPanel({
   coherenceMsg,
   mcq,
 }: DebriefPanelProps) {
+  const { t } = useI18n();
+  const dirLabel = useDirectionLabel();
   const [density, setDensity] = useState<Density>("rapide");
+  const quickTake =
+    scenario.quickTake ??
+    t("debrief.quickTakeFallback", {
+      dir: dirLabel(scenario.correctDirection).toLowerCase(),
+      symbol: scenario.symbol,
+    });
   const keyLearning = scenario.keyLearning ?? scenario.rationale;
 
   return (
@@ -90,13 +95,15 @@ export function DebriefPanel({
         )}
         <div className="min-w-0">
           <div className={cn("font-display text-lg font-bold", correct ? "text-bull" : "text-bear")}>
-            {correct ? "Position correcte" : "Position divergente"}
+            {correct ? t("debrief.correct") : t("debrief.incorrect")}
           </div>
           <div className="text-xs text-muted-foreground">
-            Ton biais <span className="font-semibold text-foreground">{DIRECTION_LABELS[direction]}</span>
-            {" · attendu "}
+            {t("debrief.yourBias")}{" "}
+            <span className="font-semibold text-foreground">{dirLabel(direction)}</span>
+            {" · "}
+            {t("debrief.expected")}{" "}
             <span className="font-semibold text-foreground">
-              {DIRECTION_LABELS[scenario.correctDirection]}
+              {dirLabel(scenario.correctDirection)}
             </span>
           </div>
         </div>
@@ -124,7 +131,7 @@ export function DebriefPanel({
                 )}
               >
                 {d === "rapide" ? <Zap className="h-3.5 w-3.5" /> : <BookOpen className="h-3.5 w-3.5" />}
-                {d === "rapide" ? "Rapide" : "Complète"}
+                {d === "rapide" ? t("debrief.quick") : t("debrief.full")}
               </button>
             ))}
           </div>
@@ -133,8 +140,8 @@ export function DebriefPanel({
 
       <div className="space-y-4 p-4 sm:p-5">
         {/* Réponse rapide — always visible */}
-        <Section icon={Zap} title="Réponse rapide" tone="gold">
-          <p className="text-sm leading-relaxed text-foreground/90">{fallbackQuickTake(scenario)}</p>
+        <Section icon={Zap} title={t("debrief.quickTake")} tone="gold">
+          <p className="text-sm leading-relaxed text-foreground/90">{quickTake}</p>
         </Section>
 
         <AnimatePresence initial={false}>
@@ -146,12 +153,12 @@ export function DebriefPanel({
               exit={{ opacity: 0, height: 0 }}
               className="space-y-4 overflow-hidden"
             >
-              <Section icon={BookOpen} title="Réponse complète">
+              <Section icon={BookOpen} title={t("debrief.rationale")}>
                 <p className="text-sm leading-relaxed text-foreground/90">{scenario.rationale}</p>
               </Section>
 
               {mcq && (
-                <Section icon={Target} title="Analyse des réponses">
+                <Section icon={Target} title={t("debrief.perOption")}>
                   <ul className="space-y-2.5">
                     {mcq.options.map((opt, i) => {
                       const isCorrect = i === mcq.correctIndex;
@@ -182,8 +189,8 @@ export function DebriefPanel({
                               <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
                                 {opt.explain ??
                                   (isCorrect
-                                    ? "Réponse la plus cohérente avec le contexte macro présenté."
-                                    : "Incohérente avec le catalyseur dominant de ce scénario.")}
+                                    ? t("debrief.optionCorrectFallback")
+                                    : t("debrief.optionWrongFallback"))}
                               </p>
                             </div>
                           </div>
@@ -194,14 +201,14 @@ export function DebriefPanel({
                 </Section>
               )}
 
-              <Section icon={Activity} title="Outcome réel de marché" tone="gold">
+              <Section icon={Activity} title={t("debrief.realOutcome")} tone="gold">
                 <p className="font-mono text-sm leading-relaxed text-foreground/80">
                   {scenario.outcome}
                 </p>
               </Section>
 
               {scenario.macroImpact && scenario.macroImpact.length > 0 && (
-                <Section icon={Activity} title="Impact macro">
+                <Section icon={Activity} title={t("debrief.macroImpact")}>
                   <ul className="space-y-1.5">
                     {scenario.macroImpact.map((m, i) => (
                       <li key={i} className="flex gap-2 text-sm text-foreground/90">
@@ -213,7 +220,7 @@ export function DebriefPanel({
                 </Section>
               )}
 
-              <Section icon={Lightbulb} title="Key Learning" tone="primary">
+              <Section icon={Lightbulb} title={t("debrief.keyLearning")} tone="primary">
                 <p className="text-sm font-medium leading-relaxed text-foreground">{keyLearning}</p>
               </Section>
 

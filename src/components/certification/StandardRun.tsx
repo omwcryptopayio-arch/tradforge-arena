@@ -8,6 +8,7 @@ import { DebriefPanel } from "./DebriefPanel";
 import type { ScenarioSpec } from "@/lib/certification/types";
 import { scoreDirection } from "@/lib/certification/engine";
 import { saveAttempt, uid } from "@/lib/certification/storage";
+import { useI18n } from "@/lib/i18n";
 
 interface StandardRunProps {
   scenario: ScenarioSpec;
@@ -18,6 +19,7 @@ interface StandardRunProps {
 type Phase = "loading" | "replay" | "debrief";
 
 export function StandardRun({ scenario, isLast, onNext }: StandardRunProps) {
+  const { t } = useI18n();
   const [phase, setPhase] = useState<Phase>("loading");
   const [chosen, setChosen] = useState<number | null>(null);
   const startedAt = useMemo(() => Date.now(), [scenario.id]);
@@ -61,7 +63,7 @@ export function StandardRun({ scenario, isLast, onNext }: StandardRunProps) {
       {phase !== "loading" && (
         <div className="rounded-xl border border-border bg-surface/60 p-4 sm:p-5">
           <div className="label-mono mb-3 flex items-center gap-1.5 text-primary">
-            <span className="text-[var(--gold)]">✦</span> Score Engine · Décision
+            <span className="text-[var(--gold)]">✦</span> {t("debrief.scoreEngine")}
           </div>
           <h3 className="mb-4 font-display text-base font-semibold sm:text-lg">{scenario.question}</h3>
           <div className="space-y-2.5">
@@ -115,11 +117,11 @@ export function StandardRun({ scenario, isLast, onNext }: StandardRunProps) {
             >
               {isLast ? (
                 <>
-                  <Trophy className="h-4 w-4" /> Terminer le niveau
+                  <Trophy className="h-4 w-4" /> {t("results.finish")}
                 </>
               ) : (
                 <>
-                  Scénario suivant <ArrowRight className="h-4 w-4" />
+                  {t("results.next")} <ArrowRight className="h-4 w-4" />
                 </>
               )}
             </button>

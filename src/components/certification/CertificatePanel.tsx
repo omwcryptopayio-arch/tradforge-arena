@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { Award, Download, Lock, Loader2 } from "lucide-react";
 import { readCertificateSummary, generateCertificatePdf } from "@/lib/certification/certificate";
+import { useI18n } from "@/lib/i18n";
 
 export function CertificatePanel() {
+  const { t } = useI18n();
   const [summary, setSummary] = useState(() => readCertificateSummary());
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
@@ -43,12 +45,12 @@ export function CertificatePanel() {
             {unlocked ? <Award className="h-6 w-6" /> : <Lock className="h-5 w-5" />}
           </div>
           <div>
-            <div className="label-mono text-primary/80">TRADFORGE INSTITUT</div>
-            <h3 className="font-display text-xl font-bold">Certificat officiel</h3>
+            <div className="label-mono text-primary/80">{t("certificate.institute")}</div>
+            <h3 className="font-display text-xl font-bold">{t("certificate.title")}</h3>
             <p className="mt-1 max-w-md text-sm text-muted-foreground">
               {unlocked
-                ? `Les 3 niveaux sont validés (score agrégé ${summary.aggregate}%). Renseigne ton nom et télécharge ton certificat PDF.`
-                : "Valide les 3 niveaux (Standard, High, Premium) pour débloquer ton certificat téléchargeable."}
+                ? t("certificate.unlocked", { pct: summary.aggregate })
+                : t("certificate.locked")}
             </p>
           </div>
         </div>
@@ -59,7 +61,7 @@ export function CertificatePanel() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             disabled={!unlocked}
-            placeholder="Nom du candidat"
+            placeholder={t("certificate.namePlaceholder")}
             className="rounded-lg border border-border bg-surface px-3 py-2.5 text-sm outline-none focus:border-primary/50 disabled:opacity-40"
           />
           <button
@@ -70,11 +72,11 @@ export function CertificatePanel() {
           >
             {busy ? (
               <>
-                <Loader2 className="h-4 w-4 animate-spin" /> Génération…
+                <Loader2 className="h-4 w-4 animate-spin" /> {t("certificate.generating")}
               </>
             ) : (
               <>
-                <Download className="h-4 w-4" /> {done ? "Télécharger à nouveau" : "Télécharger le certificat"}
+                <Download className="h-4 w-4" /> {done ? t("certificate.downloadAgain") : t("certificate.download")}
               </>
             )}
           </button>

@@ -1,6 +1,7 @@
 import { motion } from "motion/react";
 import { ArrowRight, Trophy } from "lucide-react";
 import { CandleChart } from "./CandleChart";
+import { useI18n } from "@/lib/i18n";
 import { DebriefPanel } from "./DebriefPanel";
 import { type Direction, type ScenarioSpec } from "@/lib/certification/types";
 
@@ -32,6 +33,7 @@ export function ResultsView({
   metrics,
   coherenceMsg,
 }: ResultsViewProps) {
+  const { t } = useI18n();
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -41,7 +43,7 @@ export function ResultsView({
     >
       {/* Outcome reveal — same chart cadence continues to the final candle. */}
       <div>
-        <div className="label-mono mb-2 text-muted-foreground">Reprise · révélation de l'outcome</div>
+        <div className="label-mono mb-2 text-muted-foreground">{t("results.reveal")}</div>
         <CandleChart spec={scenario.chart} maxReveal={scenario.chart.candles} />
       </div>
 
@@ -61,11 +63,11 @@ export function ResultsView({
       >
         {isLast ? (
           <>
-            <Trophy className="h-4 w-4" /> Terminer le niveau
+            <Trophy className="h-4 w-4" /> {t("results.finish")}
           </>
         ) : (
           <>
-            Scénario suivant <ArrowRight className="h-4 w-4" />
+            {t("results.next")} <ArrowRight className="h-4 w-4" />
           </>
         )}
       </button>
