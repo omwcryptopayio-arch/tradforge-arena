@@ -68,6 +68,7 @@ export const fr = {
     load: "Charger le Replay",
     reload: "Rejouer le Replay",
     hint: "Le moteur de replay démarre à ta demande.",
+    candles: "bougies",
   },
   decision: {
     title: "Ta décision",

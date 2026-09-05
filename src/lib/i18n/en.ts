@@ -69,6 +69,7 @@ export const en: Dictionary = {
     load: "Load replay",
     reload: "Replay again",
     hint: "The replay engine starts on your call.",
+    candles: "candles",
   },
   decision: {
     title: "Your decision",
