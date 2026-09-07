@@ -3,8 +3,11 @@ import { ArrowLeft } from "lucide-react";
 import { Stars } from "@/components/certification/Stars";
 import { StandardRun } from "@/components/certification/StandardRun";
 import { WorkspaceRun } from "@/components/certification/WorkspaceRun";
-import { LEVEL_META, type Level } from "@/lib/certification/types";
+import { TopBar } from "@/components/certification/TopBar";
+import { type Level, LEVEL_META } from "@/lib/certification/types";
 import { getScenario, getScenarios } from "@/lib/certification/scenarios";
+import { useI18n } from "@/lib/i18n";
+import { useLocalizedScenario } from "@/lib/i18n/scenario";
 
 export const Route = createFileRoute("/_authenticated/certification/$level/$n")({
   component: Runner,
@@ -15,61 +18,69 @@ const VALID: Level[] = ["standard", "high", "premium"];
 function Runner() {
   const { level, n } = Route.useParams();
   const navigate = useNavigate();
+  const { t } = useI18n();
+  const localize = useLocalizedScenario();
 
   const lvl = level as Level;
   const index = Number(n);
+  const valid = VALID.includes(lvl) && Number.isFinite(index);
 
-  if (!VALID.includes(lvl) || !Number.isFinite(index)) {
-    return <NotValid />;
-  }
+  const total = valid ? getScenarios(lvl).length : 0;
+  const scenario = valid ? localize(getScenario(lvl, index)) : undefined;
 
-  const total = getScenarios(lvl).length;
-  const scenario = getScenario(lvl, index);
+  if (!valid || !scenario) return <NotValid />;
+
   const meta = LEVEL_META[lvl];
-
-  if (!scenario) return <NotValid />;
-
   const isLast = index >= total;
   const onNext = () => {
     if (isLast) {
-      navigate({ to: "/certification" });
+      void navigate({ to: "/certification" });
     } else {
-      navigate({ to: "/certification/$level/$n", params: { level: lvl, n: String(index + 1) } });
+      void navigate({
+        to: "/certification/$level/$n",
+        params: { level: lvl, n: String(index + 1) },
+      });
     }
   };
 
   return (
     <div className="tf-grid-bg min-h-screen bg-background text-foreground">
-      {/* Top bar */}
-      <header className="sticky top-0 z-20 border-b border-border bg-background/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-4xl items-center gap-4 px-5 py-3.5">
+      <TopBar
+        left={
           <Link
             to="/certification"
             className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
           >
-            <ArrowLeft className="h-4 w-4" /> Hub
+            <ArrowLeft className="h-4 w-4" />
+            <span className="hidden sm:inline">{t("common.hub")}</span>
           </Link>
-          <div className="flex items-center gap-2">
-            <span className="font-display text-sm font-semibold">{meta.name}</span>
-            <Stars count={meta.stars} />
-          </div>
-          <div className="ml-auto flex items-center gap-3">
-            <span className="font-mono text-xs text-muted-foreground">
-              Scénario {index}/{total}
+        }
+        center={
+          <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+            <span className="truncate font-display text-sm font-semibold">
+              {t(`levels.${lvl}.name`)}
             </span>
-            <div className="hidden h-1.5 w-28 overflow-hidden rounded-full bg-border sm:block">
+            <span className="hidden sm:block">
+              <Stars count={meta.stars} />
+            </span>
+            <span className="shrink-0 font-mono text-xs text-muted-foreground">
+              {index}/{total}
+            </span>
+            <div className="hidden h-1.5 w-24 shrink-0 overflow-hidden rounded-full bg-border md:block">
               <div
                 className="h-full rounded-full bg-gradient-to-r from-[var(--gold)] to-primary"
                 style={{ width: `${(index / total) * 100}%` }}
               />
             </div>
           </div>
-        </div>
-      </header>
+        }
+      />
 
-      <main className="mx-auto max-w-4xl px-5 py-6 sm:py-8">
+      <main className="mx-auto max-w-4xl px-4 py-6 sm:px-5 sm:py-8">
         <div className="mb-5">
-          <div className="label-mono mb-1 text-primary/80">{scenario.symbol}</div>
+          <div className="label-mono mb-1 text-primary/80">
+            {t("common.scenario")} {index} · {scenario.symbol}
+          </div>
           <h1 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
             {scenario.title}
           </h1>
@@ -86,12 +97,16 @@ function Runner() {
 }
 
 function NotValid() {
+  const { t } = useI18n();
   return (
     <div className="grid min-h-screen place-items-center bg-background px-5 text-center">
       <div>
-        <h1 className="font-display text-2xl font-bold text-foreground">Scénario introuvable</h1>
-        <Link to="/certification" className="mt-4 inline-block text-sm text-primary underline-offset-4 hover:underline">
-          ← Retour au hub
+        <h1 className="font-display text-2xl font-bold text-foreground">{t("common.notFound")}</h1>
+        <Link
+          to="/certification"
+          className="mt-4 inline-block text-sm text-primary underline-offset-4 hover:underline"
+        >
+          {t("common.backToHub")}
         </Link>
       </div>
     </div>
