@@ -130,6 +130,15 @@ export const fr = {
     },
     search: "Rechercher une carte…",
     empty: "Aucune carte pour ce filtre.",
+    categories: {
+      fundamentals: "fondamentaux",
+      technicals: "technique",
+      news: "actualités",
+      macro: "macro",
+      intermarket: "intermarché",
+      centralbank: "banque centrale",
+      geopolitics: "géopolitique",
+    },
   },
   reasoning: {
     title: "Capture ton raisonnement",

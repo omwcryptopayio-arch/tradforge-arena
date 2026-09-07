@@ -19,6 +19,26 @@ export interface CardText {
 type CardTextMap = Record<string, Record<Locale, CardText>>;
 
 export const CARD_TEXT: CardTextMap = {
+  "technial-structure": {
+    en: {
+      title: "Chart Structure",
+      summary: "Key support / resistance and trend structure.",
+      metric: "At support",
+      detail: [
+        { heading: "LEVELS", body: "Price tests a well-defined support with the higher-timeframe trend intact." },
+        { heading: "IMPLICATION", body: "Support holding favours continuation; a clean break flips the structure." },
+      ],
+    },
+    fr: {
+      title: "Structure graphique",
+      summary: "Supports / résistances clés et structure de tendance.",
+      metric: "Sur support",
+      detail: [
+        { heading: "NIVEAUX", body: "Le prix teste un support bien défini, la tendance des unités supérieures restant intacte." },
+        { heading: "IMPLICATION", body: "Un support tenu favorise la continuation ; une cassure nette inverse la structure." },
+      ],
+    },
+  },
   dxy: {
     en: {
       title: "Dollar Index",

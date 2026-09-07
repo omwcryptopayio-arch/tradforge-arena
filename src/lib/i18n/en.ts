@@ -131,6 +131,15 @@ export const en: Dictionary = {
     },
     search: "Search a card…",
     empty: "No card for this filter.",
+    categories: {
+      fundamentals: "fundamentals",
+      technicals: "technicals",
+      news: "news",
+      macro: "macro",
+      intermarket: "intermarket",
+      centralbank: "central bank",
+      geopolitics: "geopolitics",
+    },
   },
   reasoning: {
     title: "Capture your reasoning",
