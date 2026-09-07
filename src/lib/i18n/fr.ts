@@ -196,6 +196,18 @@ export const fr = {
     quickTakeFallback: "Position institutionnelle dominante : biais {dir} sur {symbol}.",
     scoreEngine: "Score Engine · Décision",
   },
+  chart: {
+    support: "Support",
+    resistance: "Résistance",
+    window: "Fenêtre",
+    candles: "Bougies",
+    pips: "Pips réalisés",
+    direction: "Direction",
+    replay: "Rejouer",
+    play: "Lecture",
+    pause: "Pause",
+    progress: "Progression du replay",
+  },
   timer: {
     overtime: "Dépassement",
   },

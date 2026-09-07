@@ -161,7 +161,7 @@ export function ContextCard({ card, viewed, onOpen, mode = "guided" }: ContextCa
               </span>
             )}
             <span className="label-mono text-[9px] text-muted-foreground/70">
-              {viewed ? "consultée ✓" : "cliquer pour ouvrir"}
+              {viewed ? `${t("cards.viewedOne")} ✓` : t("cards.open")}
             </span>
           </div>
         </>

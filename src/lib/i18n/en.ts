@@ -197,6 +197,18 @@ export const en: Dictionary = {
     quickTakeFallback: "Dominant institutional stance: {dir} bias on {symbol}.",
     scoreEngine: "Score Engine · Decision",
   },
+  chart: {
+    support: "Support",
+    resistance: "Resistance",
+    window: "Window",
+    candles: "Candles",
+    pips: "Pips realised",
+    direction: "Direction",
+    replay: "Replay",
+    play: "Play",
+    pause: "Pause",
+    progress: "Replay progress",
+  },
   timer: {
     overtime: "Overtime",
   },
