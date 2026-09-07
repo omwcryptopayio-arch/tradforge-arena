@@ -349,12 +349,12 @@ export function ContextCardModal({
               </div>
             ) : (
               <div className="space-y-4 py-1">
-                {card.metric && (
+                {(text?.metric ?? card.metric) && (
                   <div className={cn("font-mono text-lg font-semibold", toneClass(card.metricTone))}>
-                    {card.metric}
+                    {text?.metric ?? card.metric}
                   </div>
                 )}
-                {card.detail.map((d, i) => (
+                {(text?.detail ?? card.detail).map((d, i) => (
                   <div key={i}>
                     <div className="label-mono mb-1">{d.heading}</div>
                     <p className="text-sm leading-relaxed text-foreground/90">{d.body}</p>
