@@ -339,8 +339,7 @@ export function ContextCardModal({
                 )}
 
                 <p className="border-t border-border/60 pt-3 text-center text-xs italic text-muted-foreground/70">
-                  {RAW_DATA_NOTICE}
-                  fournie.
+                  {t("cards.rawData")}
                 </p>
               </div>
             ) : (
