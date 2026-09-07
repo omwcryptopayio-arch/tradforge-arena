@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { RotateCcw, Play, Pause } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/lib/i18n";
+import { useDirectionLabel } from "@/lib/i18n/scenario";
 import {
   buildChartGeometry,
   formatPrice,
@@ -32,6 +33,8 @@ export function CandleChart({
   onReachMax,
   className,
 }: CandleChartProps) {
+  const { t } = useI18n();
+  const dirLabel = useDirectionLabel();
   const geo: ChartGeometry = useMemo(() => buildChartGeometry(spec), [spec]);
   const total = geo.candles.length;
   const cap = Math.min(maxReveal, total);
