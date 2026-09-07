@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useI18n } from "@/lib/i18n";
 import { motion } from "motion/react";
 import { CheckCircle2, Circle } from "lucide-react";
 import {
@@ -105,6 +106,8 @@ interface ContextCardProps {
 }
 
 export function ContextCard({ card, viewed, onOpen, mode = "guided" }: ContextCardProps) {
+  const { t, cardText } = useI18n();
+  const text = cardText(card.id);
   const Icon = CATEGORY_ICON[card.category];
   const ds = card.dataset;
   const analyst = mode === "analyst" && !!ds;
@@ -135,7 +138,7 @@ export function ContextCard({ card, viewed, onOpen, mode = "guided" }: ContextCa
           ) : (
             <span className="flex items-center gap-1 rounded-md bg-accent px-1.5 py-0.5 text-[10px] text-muted-foreground">
               <Icon className="h-3 w-3" />
-              {CATEGORY_LABELS[card.category]}
+              {t(`cards.categories.${card.category}`)}
             </span>
           )}
         </div>
@@ -146,7 +149,7 @@ export function ContextCard({ card, viewed, onOpen, mode = "guided" }: ContextCa
         )}
       </div>
 
-      <div className="font-display text-sm font-semibold">{card.title}</div>
+      <div className="font-display text-sm font-semibold">{text?.title ?? card.title}</div>
 
       {analyst ? (
         <>
@@ -158,12 +161,12 @@ export function ContextCard({ card, viewed, onOpen, mode = "guided" }: ContextCa
               </span>
             )}
             <span className="label-mono text-[9px] text-muted-foreground/70">
-              {viewed ? "consultée ✓" : "cliquer pour ouvrir"}
+              {viewed ? `${t("cards.viewedOne")} ✓` : t("cards.open")}
             </span>
           </div>
         </>
       ) : (
-        <div className="mt-0.5 text-xs text-muted-foreground">{card.summary}</div>
+        <div className="mt-0.5 text-xs text-muted-foreground">{text?.summary ?? card.summary}</div>
       )}
     </motion.button>
   );
@@ -192,7 +195,7 @@ function AnalystChart({ tf, unit }: { tf: CardTimeframe; unit?: string }) {
               fontSize: 12,
             }}
             labelStyle={{ color: "var(--muted-foreground)" }}
-            formatter={(v: number | string) => [`${v}${unit ? ` ${unit}` : ""}`, "Valeur"]}
+            formatter={(v: number | string) => [`${v}${unit ? ` ${unit}` : ""}`, "·"]}
           />
           {(tf.levels ?? []).map((lvl, i) => (
             <ReferenceLine
@@ -253,6 +256,8 @@ export function ContextCardModal({
   mode = "guided",
   onClose,
 }: ContextCardModalProps) {
+  const { t, cardText } = useI18n();
+  const text = card ? cardText(card.id) : undefined;
   const ds = card?.dataset;
   const analyst = mode === "analyst" && !!ds && !!ds.timeframes?.length;
   const [tfIndex, setTfIndex] = useState(2); // default "Daily"
@@ -269,7 +274,7 @@ export function ContextCardModal({
               <div className="flex items-center gap-2">
                 <span className="font-mono text-base font-semibold">{card.ticker}</span>
                 <span className="rounded-md bg-accent px-2 py-0.5 text-[11px] text-muted-foreground">
-                  {CATEGORY_LABELS[card.category]}
+                  {t(`cards.categories.${card.category}`)}
                 </span>
                 {ds && <VerdictBadge ds={ds} />}
                 {cardNumber && cardTotal && (
@@ -278,7 +283,7 @@ export function ContextCardModal({
                   </span>
                 )}
               </div>
-              <DialogTitle className="font-display text-xl">{card.title}</DialogTitle>
+              <DialogTitle className="font-display text-xl">{text?.title ?? card.title}</DialogTitle>
             </DialogHeader>
 
             {analyst ? (
@@ -289,7 +294,7 @@ export function ContextCardModal({
                     {[
                       { k: "Actual", v: ds!.actual, tone: ds!.deltaTone },
                       { k: "Consensus", v: ds!.consensus },
-                      { k: "Précédent", v: ds!.previous },
+                      { k: "Prev.", v: ds!.previous },
                     ]
                       .filter((x) => x.v)
                       .map((x) => (
@@ -339,18 +344,17 @@ export function ContextCardModal({
                 )}
 
                 <p className="border-t border-border/60 pt-3 text-center text-xs italic text-muted-foreground/70">
-                  Données brutes. À vous d'observer, comparer et déduire — aucune conclusion n'est
-                  fournie.
+                  {t("cards.rawData")}
                 </p>
               </div>
             ) : (
               <div className="space-y-4 py-1">
-                {card.metric && (
+                {(text?.metric ?? card.metric) && (
                   <div className={cn("font-mono text-lg font-semibold", toneClass(card.metricTone))}>
-                    {card.metric}
+                    {text?.metric ?? card.metric}
                   </div>
                 )}
-                {card.detail.map((d, i) => (
+                {(text?.detail ?? card.detail).map((d, i) => (
                   <div key={i}>
                     <div className="label-mono mb-1">{d.heading}</div>
                     <p className="text-sm leading-relaxed text-foreground/90">{d.body}</p>

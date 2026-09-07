@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { RotateCcw, Play, Pause } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useI18n } from "@/lib/i18n";
+import { useDirectionLabel } from "@/lib/i18n/scenario";
 import {
   buildChartGeometry,
   formatPrice,
@@ -31,6 +33,8 @@ export function CandleChart({
   onReachMax,
   className,
 }: CandleChartProps) {
+  const { t } = useI18n();
+  const dirLabel = useDirectionLabel();
   const geo: ChartGeometry = useMemo(() => buildChartGeometry(spec), [spec]);
   const total = geo.candles.length;
   const cap = Math.min(maxReveal, total);
@@ -159,10 +163,10 @@ export function CandleChart({
 
         {/* support / resistance */}
         {spec.support != null && (
-          <Level y={scaleY(spec.support)} label={spec.supportLabel ?? "Support"} tone="bull" />
+          <Level y={scaleY(spec.support)} label={spec.supportLabel ?? t("chart.support")} tone="bull" />
         )}
         {spec.resistance != null && (
-          <Level y={scaleY(spec.resistance)} label={spec.resistanceLabel ?? "Résistance"} tone="bear" />
+          <Level y={scaleY(spec.resistance)} label={spec.resistanceLabel ?? t("chart.resistance")} tone="bear" />
         )}
 
         {/* decision / event line */}
@@ -292,16 +296,16 @@ export function CandleChart({
       {fullyRevealed && (
         <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
           {[
-            { label: "Fenêtre", value: `${spec.shockAt}–${winEnd ?? total}` },
-            { label: "Bougies", value: `${total}` },
+            { label: t("chart.window"), value: `${spec.shockAt}–${winEnd ?? total}` },
+            { label: t("chart.candles"), value: `${total}` },
             {
-              label: "Pips réalisés",
+              label: t("chart.pips"),
               value: `${realizedPips >= 0 ? "+" : ""}${realizedPips}`,
               tone: finalDir,
             },
             {
-              label: "Direction",
-              value: finalDir === "bull" ? "Haussier" : finalDir === "bear" ? "Baissier" : "Neutre",
+              label: t("chart.direction"),
+              value: dirLabel(finalDir),
               tone: finalDir,
             },
           ].map((m) => (
@@ -332,7 +336,7 @@ export function CandleChart({
           type="button"
           onClick={replay}
           className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-[var(--gold)] to-primary text-primary-foreground shadow-[var(--shadow-gold)] transition-transform hover:scale-105 active:scale-95"
-          aria-label="Rejouer"
+          aria-label={t("chart.replay")}
         >
           <RotateCcw className="h-4 w-4" />
         </button>
@@ -340,7 +344,7 @@ export function CandleChart({
           type="button"
           onClick={() => setPlaying((p) => !p)}
           className="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-border bg-surface-raised text-foreground transition-colors hover:bg-accent"
-          aria-label={playing ? "Pause" : "Lecture"}
+          aria-label={playing ? t("chart.pause") : t("chart.play")}
         >
           {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
         </button>
@@ -354,7 +358,7 @@ export function CandleChart({
             setCur(Number(e.target.value));
           }}
           className="tf-range h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-border"
-          aria-label="Progression du replay"
+          aria-label={t("chart.progress")}
         />
         <span className="w-14 text-right font-mono text-xs tabular-nums text-muted-foreground">
           {cur}/{cap}

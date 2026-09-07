@@ -78,26 +78,26 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "TradForge — Certification Macro Trading" },
+      { title: "TradeForge Arena — Macro Trading Certification" },
       {
         name: "description",
         content:
-          "TradForge Institut : certification de trading macro sur poste de travail institutionnel. Décide, justifie, mesure ta cohérence.",
+          "TradeForge Arena: institutional-desk macro trading certification. Decide, justify, measure your coherence.",
       },
-      { name: "author", content: "TradForge Institut" },
-      { property: "og:title", content: "TradForge — Certification Macro Trading" },
+      { name: "author", content: "TradeForge Arena" },
+      { property: "og:title", content: "TradeForge Arena — Macro Trading Certification" },
       {
         property: "og:description",
         content:
-          "Un desk macro institutionnel pour apprendre le raisonnement de trading, pas la mémorisation.",
+          "An institutional macro desk to learn trading reasoning, not memorisation.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "TradForge — Certification Macro Trading" },
+      { name: "twitter:title", content: "TradeForge Arena — Macro Trading Certification" },
       {
         name: "twitter:description",
         content:
-          "Un desk macro institutionnel pour apprendre le raisonnement de trading, pas la mémorisation.",
+          "An institutional macro desk to learn trading reasoning, not memorisation.",
       },
     ],
     links: [

@@ -342,7 +342,7 @@ export const issueCertificate = createServerFn({ method: "POST" })
       passedLevels.has(l),
     );
     if (!allPassed)
-      throw new Error("Certification incomplète : les 3 niveaux doivent être validés.");
+      throw new Error("Certification incomplete: all three levels must be cleared.");
 
     const { data: existing } = await supabase
       .from("certificates_issued")

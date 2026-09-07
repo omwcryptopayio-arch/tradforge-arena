@@ -6,11 +6,11 @@ import type { Direction, ScenarioSpec } from "./types";
 export const ESSENTIAL_THRESHOLD = 72;
 
 export const REASONING_ROLES = [
-  { value: "confirmation", label: "Confirmation", hint: "A confirmé ma thèse" },
-  { value: "invalidation", label: "Invalidation", hint: "A remis en cause ma thèse" },
-  { value: "contexte", label: "Contexte", hint: "A cadré la situation" },
-  { value: "timing", label: "Timing", hint: "A précisé le moment d'agir" },
-  { value: "risque", label: "Risque", hint: "A éclairé le risque" },
+  { value: "confirmation", label: "reasoning.roles.confirmation", hint: "reasoning.roleHints.confirmation" },
+  { value: "invalidation", label: "reasoning.roles.invalidation", hint: "reasoning.roleHints.invalidation" },
+  { value: "contexte", label: "reasoning.roles.contexte", hint: "reasoning.roleHints.contexte" },
+  { value: "timing", label: "reasoning.roles.timing", hint: "reasoning.roleHints.timing" },
+  { value: "risque", label: "reasoning.roles.risque", hint: "reasoning.roleHints.risque" },
 ] as const;
 
 export type ReasoningRole = (typeof REASONING_ROLES)[number]["value"];
@@ -71,11 +71,11 @@ export function coherenceIndex(
 }
 
 export function coherenceFeedback(index: number, declaredButNotOpened: number): string {
-  if (index >= 85) return "Excellente cohérence : ton raisonnement déclaré colle à ta recherche réelle.";
-  if (index >= 60) return "Bonne cohérence, avec quelques écarts entre exploration et justification.";
-  if (declaredButNotOpened > 0)
-    return "Attention : tu as justifié des cartes que tu n'as pas réellement consultées (biais de rationalisation).";
-  return "Cohérence faible : ta décision et ton raisonnement déclaré divergent de ta recherche.";
+  // Returns a stable i18n key; the UI resolves it through `t()`.
+  if (index >= 85) return "coherence.high";
+  if (index >= 60) return "coherence.mid";
+  if (declaredButNotOpened > 0) return "coherence.rationalisation";
+  return "coherence.low";
 }
 
 export const PASS_THRESHOLD = 70;
