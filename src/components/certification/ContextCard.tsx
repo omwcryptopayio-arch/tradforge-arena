@@ -192,7 +192,7 @@ function AnalystChart({ tf, unit }: { tf: CardTimeframe; unit?: string }) {
               fontSize: 12,
             }}
             labelStyle={{ color: "var(--muted-foreground)" }}
-            formatter={(v: number | string) => [`${v}${unit ? ` ${unit}` : ""}`, "Valeur"]}
+            formatter={(v: number | string) => [`${v}${unit ? ` ${unit}` : ""}`, "·"]}
           />
           {(tf.levels ?? []).map((lvl, i) => (
             <ReferenceLine
@@ -289,7 +289,7 @@ export function ContextCardModal({
                     {[
                       { k: "Actual", v: ds!.actual, tone: ds!.deltaTone },
                       { k: "Consensus", v: ds!.consensus },
-                      { k: "Précédent", v: ds!.previous },
+                      { k: "Prev.", v: ds!.previous },
                     ]
                       .filter((x) => x.v)
                       .map((x) => (
@@ -339,7 +339,7 @@ export function ContextCardModal({
                 )}
 
                 <p className="border-t border-border/60 pt-3 text-center text-xs italic text-muted-foreground/70">
-                  Données brutes. À vous d'observer, comparer et déduire — aucune conclusion n'est
+                  {RAW_DATA_NOTICE}
                   fournie.
                 </p>
               </div>
