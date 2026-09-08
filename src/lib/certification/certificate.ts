@@ -90,7 +90,7 @@ export async function generateCertificatePdf(
   let hash = `TF-CH1-${Math.random().toString(36).slice(2, 14).toUpperCase()}`;
   let issuedAt = new Date().toISOString();
   try {
-    await ensureSession();
+    if (!(await ensureSession())) throw new Error("no session");
     const res = await issueCertificate({
       data: { candidateName: name, aggregateScore: summary.aggregate, levels: LEVELS },
     });
