@@ -198,6 +198,7 @@ export const en: Dictionary = {
     scoreEngine: "Score Engine · Decision",
   },
   chart: {
+    windowEnd: "End of analysis window",
     support: "Support",
     resistance: "Resistance",
     window: "Window",
