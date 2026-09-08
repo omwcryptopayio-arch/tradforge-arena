@@ -6,19 +6,37 @@
 
 import { useCallback } from "react";
 import { useI18n } from "./index";
+import { chartLabel } from "./content.chart";
 import type { Direction, ScenarioSpec } from "@/lib/certification/types";
 
 /** Returns a scenario whose copy is swapped for the active locale. */
 export function useLocalizedScenario() {
-  const { scenarioText } = useI18n();
+  const { scenarioText, locale } = useI18n();
 
   return useCallback(
     (spec: ScenarioSpec | undefined): ScenarioSpec | undefined => {
       if (!spec) return spec;
       const text = scenarioText(spec.id);
-      if (!text) return spec;
+      const L = (s: string) => chartLabel(s, locale);
+      const chart = {
+        ...spec.chart,
+        period: L(spec.chart.period),
+        eventLabel: L(spec.chart.eventLabel),
+        ...(spec.chart.supportLabel ? { supportLabel: L(spec.chart.supportLabel) } : {}),
+        ...(spec.chart.resistanceLabel ? { resistanceLabel: L(spec.chart.resistanceLabel) } : {}),
+        ...(spec.chart.techAnnotations
+          ? {
+              techAnnotations: spec.chart.techAnnotations.map((a) => ({
+                ...a,
+                label: L(a.label),
+              })),
+            }
+          : {}),
+      };
+      if (!text) return { ...spec, chart };
       return {
         ...spec,
+        chart,
         title: text.title,
         brief: text.brief,
         ...(text.question ? { question: text.question } : {}),
@@ -34,9 +52,10 @@ export function useLocalizedScenario() {
         outcome: text.outcome,
       };
     },
-    [scenarioText],
+    [scenarioText, locale],
   );
 }
+
 
 /** Localised Bullish / Neutral / Bearish label. */
 export function useDirectionLabel() {
