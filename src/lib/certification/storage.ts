@@ -90,7 +90,8 @@ export function saveAttempt(attempt: Attempt): void {
   // Write-through to the cloud (fire-and-forget; local cache already updated).
   void (async () => {
     try {
-      await ensureSession();
+      // Signed-out visitors keep a local-only cache; never call protected endpoints.
+      if (!(await ensureSession())) return;
       await submitAttempt({
         data: {
           scenarioId: attempt.scenarioId,
@@ -153,7 +154,8 @@ export function addJournalEntry(entry: JournalEntry): void {
   write(JOURNAL_KEY, all);
   void (async () => {
     try {
-      await ensureSession();
+      // Signed-out visitors keep a local-only cache; never call protected endpoints.
+      if (!(await ensureSession())) return;
       await saveJournalEntry({
         data: {
           scenarioId: entry.scenarioId,
@@ -181,7 +183,8 @@ export function resetAll(): void {
   window.dispatchEvent(new CustomEvent("tradforge:storage"));
   void (async () => {
     try {
-      await ensureSession();
+      // Signed-out visitors keep a local-only cache; never call protected endpoints.
+      if (!(await ensureSession())) return;
       await resetCertification();
     } catch (e) {
       console.warn("[TradForge] resetCertification failed:", e);
@@ -197,7 +200,7 @@ export function resetAll(): void {
 export async function hydrateFromCloud(): Promise<void> {
   if (typeof window === "undefined") return;
   try {
-    await ensureSession();
+    if (!(await ensureSession())) return;
     const state = await getCertificationState();
     const localAttempts = getAttempts();
     const localJournal = read<JournalEntry[]>(JOURNAL_KEY, []);

@@ -229,7 +229,7 @@ export function WorkspaceRun({ scenario, isLast, onNext }: WorkspaceRunProps) {
         isLast={isLast}
         onNext={onNext}
         metrics={metrics}
-        coherenceMsg={isPremium ? coherenceFeedback(coherence, declaredNotOpened) : undefined}
+        coherenceMsg={isPremium ? t(coherenceFeedback(coherence, declaredNotOpened)) : undefined}
       />
     );
   }

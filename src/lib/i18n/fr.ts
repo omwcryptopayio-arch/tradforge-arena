@@ -197,6 +197,7 @@ export const fr = {
     scoreEngine: "Score Engine · Décision",
   },
   chart: {
+    windowEnd: "Fin fenêtre d'analyse",
     support: "Support",
     resistance: "Résistance",
     window: "Fenêtre",

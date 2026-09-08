@@ -175,6 +175,8 @@ export function markScenarioUsed(level: Level, scenarioId: string): void {
 
   void (async () => {
     try {
+      const { ensureSession } = await import("./session");
+      if (!(await ensureSession())) return;
       const { recordScenarioUsage } = await import("./cloud.functions");
       await recordScenarioUsage({ data: { level, scenarioId } });
     } catch {

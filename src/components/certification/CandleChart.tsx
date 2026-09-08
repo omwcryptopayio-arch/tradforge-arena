@@ -221,7 +221,7 @@ export function CandleChart({
               className="fill-muted-foreground font-mono"
               fontSize={10}
             >
-              Fin fenêtre d'analyse
+              {t("chart.windowEnd")}
             </text>
           </g>
         )}
