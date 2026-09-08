@@ -1,12 +1,21 @@
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { Award, Download, Lock, Loader2 } from "lucide-react";
-import { readCertificateSummary, generateCertificatePdf } from "@/lib/certification/certificate";
+import {
+  readCertificateSummary,
+  generateCertificatePdf,
+  type CertificateSummary,
+} from "@/lib/certification/certificate";
 import { useI18n } from "@/lib/i18n";
 
 export function CertificatePanel() {
-  const { t } = useI18n();
-  const [summary, setSummary] = useState(() => readCertificateSummary());
+  const { t, locale } = useI18n();
+  // Read client storage after mount only, so SSR and hydration agree.
+  const [summary, setSummary] = useState<CertificateSummary>({
+    completedAll: false,
+    aggregate: 0,
+    perLevel: [],
+  });
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
@@ -23,7 +32,7 @@ export function CertificatePanel() {
   const onDownload = async () => {
     setBusy(true);
     try {
-      await generateCertificatePdf(name);
+      await generateCertificatePdf(name, locale);
       setDone(true);
     } catch (e) {
       console.error(e);

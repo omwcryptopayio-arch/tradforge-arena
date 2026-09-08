@@ -7,7 +7,8 @@ import { issueCertificate } from "./cloud.functions";
 import { ensureSession } from "./session";
 import { levelSummary } from "./storage";
 import { getScenarios } from "./scenarios";
-import { LEVEL_META, type Level } from "./types";
+import { type Level } from "./types";
+import type { Locale } from "@/lib/i18n/locale";
 
 const LEVELS: Level[] = ["standard", "high", "premium"];
 
@@ -39,9 +40,51 @@ export function readCertificateSummary(): CertificateSummary {
   return { completedAll, aggregate, perLevel };
 }
 
-export async function generateCertificatePdf(candidateName: string): Promise<void> {
+/** Certificate copy per locale — the PDF is a document, not UI, so it carries its own strings. */
+const PDF_TEXT = {
+  fr: {
+    institute: "TRADEFORGE ARENA",
+    title: "Certificat de Certification Macro Trading",
+    chapter: "CHAPITRE 01 · VOIR · MANIPULER · DECIDER · COMPRENDRE",
+    awardedTo: "Decerne a",
+    mention: "pour avoir valide les trois niveaux de la certification finale avec distinction.",
+    scenarios: "scenarios valides",
+    score: "SCORE",
+    aggregate: "Score agrege",
+    issued: "Delivre le",
+    issuer: "TradeForge Arena · Emetteur agree",
+    verify: "Verification :",
+    signature: "Signature numerique · TRADEFORGE ARENA",
+    fallbackName: "Candidat TradeForge",
+    locale: "fr-FR",
+    file: "TradeForge-Certificat",
+  },
+  en: {
+    institute: "TRADEFORGE ARENA",
+    title: "Macro Trading Certification Certificate",
+    chapter: "CHAPTER 01 · SEE · HANDLE · DECIDE · UNDERSTAND",
+    awardedTo: "Awarded to",
+    mention: "for clearing the three levels of the final certification with distinction.",
+    scenarios: "scenarios cleared",
+    score: "SCORE",
+    aggregate: "Aggregate score",
+    issued: "Issued on",
+    issuer: "TradeForge Arena · Accredited issuer",
+    verify: "Verification:",
+    signature: "Digital signature · TRADEFORGE ARENA",
+    fallbackName: "TradeForge candidate",
+    locale: "en-GB",
+    file: "TradeForge-Certificate",
+  },
+} as const;
+
+export async function generateCertificatePdf(
+  candidateName: string,
+  locale: Locale = "fr",
+): Promise<void> {
+  const L = PDF_TEXT[locale] ?? PDF_TEXT.fr;
   const summary = readCertificateSummary();
-  const name = candidateName.trim() || "Candidat TradForge";
+  const name = candidateName.trim() || L.fallbackName;
 
   // Try to register officially; fall back to a deterministic local hash.
   let hash = `TF-CH1-${Math.random().toString(36).slice(2, 14).toUpperCase()}`;
@@ -82,16 +125,16 @@ export async function generateCertificatePdf(candidateName: string): Promise<voi
     page.drawText(text, { x: cx - w / 2, y, size, font, color });
   };
 
-  center("TRADFORGE INSTITUT", H - 150, 13, monoBold, GOLD);
-  center("Certificat de Certification Macro Trading", H - 182, 26, display, INK);
-  center("CHAPITRE 01 · VOIR · MANIPULER · DÉCIDER · COMPRENDRE", H - 204, 9, mono, MUTED);
+  center(L.institute, H - 150, 13, monoBold, GOLD);
+  center(L.title, H - 182, 26, display, INK);
+  center(L.chapter, H - 204, 9, mono, MUTED);
 
-  center("Décerné à", H - 250, 12, displayReg, MUTED);
+  center(L.awardedTo, H - 250, 12, displayReg, MUTED);
   center(name, H - 288, 32, display, INK);
   page.drawLine({ start: { x: cx - 180, y: H - 300 }, end: { x: cx + 180, y: H - 300 }, thickness: 0.5, color: GOLD_SOFT });
 
   center(
-    "pour avoir validé les trois niveaux de la certification finale avec distinction.",
+    L.mention,
     H - 322,
     11,
     displayReg,
@@ -106,30 +149,29 @@ export async function generateCertificatePdf(candidateName: string): Promise<voi
     const x = startX + i * (panelW + gap);
     const y = H - 430;
     page.drawRectangle({ x, y, width: panelW, height: 78, color: PANEL, borderColor: GOLD_SOFT, borderWidth: 0.5 });
-    const meta = LEVEL_META[l.level];
-    page.drawText(meta.name.toUpperCase(), { x: x + 14, y: y + 54, size: 11, font: monoBold, color: GOLD });
-    page.drawText(`${l.passed}/${l.total} scénarios validés`, { x: x + 14, y: y + 36, size: 9, font: mono, color: MUTED });
+    page.drawText(l.level.toUpperCase(), { x: x + 14, y: y + 54, size: 11, font: monoBold, color: GOLD });
+    page.drawText(`${l.passed}/${l.total} ${L.scenarios}`, { x: x + 14, y: y + 36, size: 9, font: mono, color: MUTED });
     page.drawText(`${l.pct}%`, { x: x + 14, y: y + 12, size: 20, font: display, color: INK });
-    page.drawText("SCORE", { x: x + panelW - 52, y: y + 18, size: 8, font: mono, color: MUTED });
+    page.drawText(L.score, { x: x + panelW - 52, y: y + 18, size: 8, font: mono, color: MUTED });
   });
 
   // Aggregate score badge
-  center(`Score agrégé · ${summary.aggregate}%`, H - 468, 13, monoBold, GOLD);
+  center(`${L.aggregate} · ${summary.aggregate}%`, H - 468, 13, monoBold, GOLD);
 
   // Footer: date, hash, issuer
-  const date = new Date(issuedAt).toLocaleDateString("fr-FR", { year: "numeric", month: "long", day: "numeric" });
-  page.drawText(`Délivré le ${date}`, { x: 56, y: 58, size: 9, font: mono, color: MUTED });
-  page.drawText("TradForge Institut · Émetteur agréé", { x: 56, y: 44, size: 9, font: mono, color: MUTED });
+  const date = new Date(issuedAt).toLocaleDateString(L.locale, { year: "numeric", month: "long", day: "numeric" });
+  page.drawText(`${L.issued} ${date}`, { x: 56, y: 58, size: 9, font: mono, color: MUTED });
+  page.drawText(L.issuer, { x: 56, y: 44, size: 9, font: mono, color: MUTED });
 
-  const hashLabel = `Vérification : ${hash}`;
+  const hashLabel = `${L.verify} ${hash}`;
   const hw = mono.widthOfTextAtSize(hashLabel, 9);
   page.drawText(hashLabel, { x: W - 56 - hw, y: 58, size: 9, font: monoBold, color: GOLD });
-  const sig = "Signature numérique · TF-INSTITUT";
+  const sig = L.signature;
   const sw = mono.widthOfTextAtSize(sig, 9);
   page.drawText(sig, { x: W - 56 - sw, y: 44, size: 9, font: mono, color: MUTED });
 
   // Faint watermark
-  page.drawText("TRADFORGE", {
+  page.drawText("TRADEFORGE", {
     x: cx - 150,
     y: H / 2 - 30,
     size: 60,
@@ -146,7 +188,7 @@ export async function generateCertificatePdf(candidateName: string): Promise<voi
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `TradForge-Certificat-${name.replace(/\s+/g, "_")}.pdf`;
+  a.download = `${L.file}-${name.replace(/\s+/g, "_")}.pdf`;
   document.body.appendChild(a);
   a.click();
   a.remove();
